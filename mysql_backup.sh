@@ -26,4 +26,3 @@ for LOOP_VAR_TXT in $LOOP_VAR
 # find ~/site_bak/mysql/ -mtime +6 -exec rm -f {} \;
 ## 6 days
 find ~/site_bak/mysql/ -cmin +8640 -exec rm -f {} \;
-
