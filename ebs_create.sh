@@ -49,7 +49,7 @@ case $1 in
     echo "You selected ${INST_TYPE}"
     
     # now create the instance
-    ec2-run-instances ${DEF_AMI} -k buddymedia --availability-zone ${ZONE} -t ${INST_TYPE} >> ${TMP_INST_OUT}
+    ec2-run-instances ${DEF_AMI} -k <CHANGE THIS> --availability-zone ${ZONE} -t ${INST_TYPE} >> ${TMP_INST_OUT}
     
     ## attach the volumes
     x=0
