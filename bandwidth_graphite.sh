@@ -58,7 +58,7 @@ do
 		#### begin nc to graph services ####
 		echo "${HOSTNAME}.${IFACE}.RxPACKETS ${RXPCK} ${DATE}"  | nc ${GRAPH_SERVER} ${GRAPH_PORT}
 		echo "${HOSTNAME}.${IFACE}.TxPACKETS ${TXPCK} ${DATE}"  | nc ${GRAPH_SERVER} ${GRAPH_PORT}
-		echo "${HOSTNAME}.${IFACE}.RXBYTES ${RXBYT} ${DATE}"  | nc ${GRAPH_SERVER} ${GRAPH_PORT}
-		echo "${HOSTNAME}.${IFACE}.TXBYTES ${TXBYT} ${DATE}"  | nc ${GRAPH_SERVER} ${GRAPH_PORT}
+		echo "${HOSTNAME}.${IFACE}.RxBYTES ${RXBYT} ${DATE}"  | nc ${GRAPH_SERVER} ${GRAPH_PORT}
+		echo "${HOSTNAME}.${IFACE}.TxBYTES ${TXBYT} ${DATE}"  | nc ${GRAPH_SERVER} ${GRAPH_PORT}
 	done
 done
