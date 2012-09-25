@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ######
 # this script uses s3cmd from http://s3tools.org/s3cmd to sync a folder in linux to s3
 #
@@ -10,7 +9,8 @@
 ######
 
 S3CMD=`which s3cmd`
-S3CMD_OPTIONS="--recursive put"
+S3CMD_OPTIONS_PUT="--recursive put"
+S3CMD_OPTIONS_SYNC="--skip-existing --recursive sync"
 BKUP_PATH=CHANGE THIS TO PATH WHERE FOLDERS ARE LOCATED
 BUCKET=s3://CHANGE THIS TO S3 BUCKET NAME FROM "s3cmd ls"/
 LIST=/tmp/S3CMD.$$
@@ -32,10 +32,13 @@ ${S3CMD} la > $LIST
 for DIR_CHECK in `ls -al $BKUP_PATH | awk '{print $9}' | tail -n +4 | tr '/' ' ' ` ; do
     if [[ $(grep -c $DIR_CHECK $LIST) -gt 0 ]]; then
         printf "\n${DIR_CHECK} exists in s3."
+        printf "\nChecking if files are in sync."
+        ${S3CMD} ${S3CMD_OPTIONS_SYNC} ${BKUP_PATH}/${DIR_CHECK} ${BUCKET}
+        printf "\nSync check complete!\n"
     else
         printf "\n${DIR_CHECK} does not exist at s3."
         printf "\nadding now:\n"
-        ${S3CMD} ${S3CMD_OPTIONS} ${BKUP_PATH}/${DIR_CHECK} ${BUCKET}
+        ${S3CMD} ${S3CMD_OPTIONS_PUT} ${BKUP_PATH}/${DIR_CHECK} ${BUCKET}
     fi
 done
 
