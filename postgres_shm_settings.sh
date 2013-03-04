@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ## test for sysctl
 if [ -z "$(which sysctl)" ]; then
   printf "\nsysctl missing.\n"
