@@ -43,4 +43,5 @@ case $1 in
         pgrid
     ;;
 
+'help'|*) echo "usage: $0 <normal|pastel|all>"
 esac
