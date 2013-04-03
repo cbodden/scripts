@@ -2,10 +2,10 @@
 
 function cgrid() {
     for x in $(seq -w 029 047); do
-        echo -n ${x}\;X "| "
+        echo -n ${x}\;XXX "|"
         for y in $(seq -w 029 047); do
             if [ "$x" == "029" ]; then
-                echo -en "\033[4m" ${x}\;${y} "\033[0m"
+                echo -en "\033[4m" XXX\;${y} "\033[0m"
             else
                 echo -en "\033[${x};${y}m" ${x}\;${y} "\033[0m"
             fi
@@ -16,10 +16,10 @@ function cgrid() {
 
 function pgrid() {
     for x in $(seq -w 089 107); do
-        echo -n ${x}\;X "| "
+        echo -n ${x}\;XXX "|"
         for y in $(seq -w 089 107); do
             if [ "$x" == "089" ]; then
-                echo -en "\033[4m" ${x}\;${y} "\033[0m"
+                echo -en "\033[4m" XXX\;${y} "\033[0m"
             else
                 echo -en "\033[${x};${y}m" ${x}\;${y} "\033[0m"
             fi
@@ -41,6 +41,8 @@ case $1 in
         cgrid
         printf "\n"
         pgrid
+        printf "\n"
+        printf "\n"
     ;;
 
 'help'|*) echo "usage: $0 <normal|pastel|all>"
