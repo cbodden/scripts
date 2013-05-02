@@ -14,10 +14,12 @@ version()
   printf -- "%s\n"
 }
 
-license()
+descrip()
 {
   cat <<EOL
-Use and modify as needed.
+This is a simple script that will show you either the
+name / subject of an RFC or let you read an RFC just
+by supplying the number.
 EOL
 }
 
@@ -26,13 +28,17 @@ usage()
   printf -- "%s\n"
   printf -- "%s\n" "Usage: ${NAME} <name|read> <####>"
   printf -- "%s\n" "Usage examples:"
-  printf -- "%s\n" "  ${NAME} name 1        # displays RFC 0001 index"
+  printf -- "%s\n" "  ${NAME} name 3334     # displays RFC 3334 index"
+  printf -- "%s\n" "    ex: 3334 Policy-Based Accounting. T. Zseby, S. Zander, C. Carle. October"
+  printf -- "%s\n" "             2002. (Format: TXT=103014 bytes) (Status: EXPERIMENTAL)"
+  printf -- "%s\n"
   printf -- "%s\n" "  ${NAME} read 1443     # read RFC 1443"
+  printf -- "%s\n"
 }
 
 ## check if $# -eq 2 && $2 is an integer
-[ $# -eq 2 ] || { version; license; usage; exit 1; }
-[ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; license; usage; exit 1; }
+[ $# -eq 2 ] || { version; descrip; usage; exit 1; }
+[ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
 
 ## prepend zeros to make id number <####>
 FN=`printf "%04d" ${2} | xargs`
@@ -66,5 +72,5 @@ case "${1}" in
     printf -- "\ndone grabbing\n"
     ${ED} ${ED_SETTINGS} "${ED_TITLE}" -e ${PAGER} "${TMP_FILE}"
   ;;
-  *) printf -- "stuffs\n"; usage; exit 1;;
+  *) printf -- "\n"; usage; exit 1;;
 esac
