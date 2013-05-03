@@ -36,14 +36,14 @@ usage()
   printf -- "%s\n"
 }
 
-## check if $# -eq 2 && $2 is an integer
+# check if $# -eq 2 && $2 is an integer
 [ $# -eq 2 ] || { version; descrip; usage; exit 1; }
 [ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
 
-## prepend zeros to make id number <####>
+# prepend zeros to make id number <####>
 FN=`printf "%04d" ${2} | xargs`
 
-## temp file and trap statement - trap for clean end
+# temp file and trap statement - trap for clean end
 case "$(uname 2>/dev/null)" in
   'Linux') TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX);;
   'Darwin') TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX);;
@@ -52,10 +52,18 @@ esac
 ###   || [ $(uname) == "Darwin" ] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX)
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
-## emulator / viewer settings
-[ -x $(which xterm 2>/dev/null) ] && EM="$(which xterm 2>/dev/null)" \
-  || [ -x $(which mrxvt 2>/dev/null) ] && EM="$(which mrxvt 2>/dev/null)" \
-  || [ -x $(which rxvt 2>/dev/null) ] && EM="$(which urxvt 2>/dev/null)"
+# emulator / viewer settings
+[ -x $(which mrxvt 2>/dev/null) ] && EM="mrxvt" \
+  || [ -x $(which xterm 2>/dev/null) ] && EM="xterm" \
+  || [ -x $(which rxvt 2>/dev/null) ] && EM="urxvt"
+case "${EM}" in
+  'xterm') EM=$(which xterm 2>/dev/null);;
+  'mrxvt') EM=$(which mrxvt 2>/dev/null);;
+  'urxvt') EM=$(which urxvt 2>/dev/null);;
+esac
+### [ -x $(which xterm 2>/dev/null) ] && EM="$(which xterm 2>/dev/null)" \
+###   || [ -x $(which mrxvt 2>/dev/null) ] && EM="$(which mrxvt 2>/dev/null)" \
+###   || [ -x $(which rxvt 2>/dev/null) ] && EM="$(which urxvt 2>/dev/null)"
 EM_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
 EM_TITLE="${NAME} - rfc${FN}.txt"
 PAGER=`which less`
