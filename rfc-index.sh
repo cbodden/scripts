@@ -8,7 +8,7 @@ NAME=$(basename $0)
 
 version()
 {
-  local VER="0.1"
+  local VER="0.2"
   printf -- "%s\n" "${NAME} version ${VER}"
   printf -- "%s\n" "<cesar@pissedoffadmins.com> 2013"
   printf -- "%s\n"
