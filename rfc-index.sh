@@ -44,16 +44,20 @@ usage()
 FN=`printf "%04d" ${2} | xargs`
 
 ## temp file and trap statement - trap for clean end
-[ $(uname) == "Linux" ] && TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX) \
-  || [ $(uname) == "Darwin" ] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX)
+case "$(uname 2>/dev/null)" in
+  'Linux') TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX);;
+  'Darwin') TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX);;
+esac
+### [ $(uname) == "Linux" ] && TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX) \
+###   || [ $(uname) == "Darwin" ] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX)
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
-## editor / viewer settings
-[ -x $(which xterm 2>/dev/null) ] && ED="$(which xterm 2>/dev/null)" \
-  || [ -x $(which mrxvt 2>/dev/null) ] && ED="$(which mrxvt 2>/dev/null)" \
-  || [ -x $(which rxvt 2>/dev/null) ] && ED="$(which urxvt 2>/dev/null)"
-ED_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
-ED_TITLE="${NAME} - rfc${FN}.txt"
+## emulator / viewer settings
+[ -x $(which xterm 2>/dev/null) ] && EM="$(which xterm 2>/dev/null)" \
+  || [ -x $(which mrxvt 2>/dev/null) ] && EM="$(which mrxvt 2>/dev/null)" \
+  || [ -x $(which rxvt 2>/dev/null) ] && EM="$(which urxvt 2>/dev/null)"
+EM_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
+EM_TITLE="${NAME} - rfc${FN}.txt"
 PAGER=`which less`
 
 case "${1}" in
@@ -72,7 +76,7 @@ case "${1}" in
       awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
       sed '/\f/d' > "${TMP_FILE}"
     printf -- "\ndone grabbing\n"
-    ${ED} ${ED_SETTINGS} "${ED_TITLE}" -e ${PAGER} "${TMP_FILE}"
+    ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
   ;;
   *) printf -- "\n"; usage; exit 1;;
 esac
