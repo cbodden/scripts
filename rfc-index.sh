@@ -66,7 +66,7 @@ case "${1}" in
 
   'read'|'show')
     printf -- "%s" "Grabbing ${FN}"
-    wget -O- -q http://www.rfc-editor.org/rfc/rfc${FN}.txt | \
+    wget -O- -q http://www.rfc-editor.org/rfc/rfc${2}.txt | \
       awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
       sed '/\f/d' > "${TMP_FILE}"
     printf -- "\ndone grabbing\n"
