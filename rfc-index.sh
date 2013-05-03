@@ -44,15 +44,15 @@ usage()
 FN=`printf "%04d" ${2} | xargs`
 
 ## temp file and trap statement - trap for clean end
-[[ $(uname) == "Linux" ]] && TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX) \
-  || [[ $(uname) == "Darwin" ]] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX)
+[ $(uname) == "Linux" ] && TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX) \
+  || [ $(uname) == "Darwin" ] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX)
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
 ## editor / viewer settings
 [ -x $(which xterm 2>/dev/null) ] && ED="$(which xterm 2>/dev/null)" \
   || [ -x $(which mrxvt 2>/dev/null) ] && ED="$(which mrxvt 2>/dev/null)" \
   || [ -x $(which rxvt 2>/dev/null) ] && ED="$(which urxvt 2>/dev/null)"
-ED_SETTINGS="-fg green -bg black -bd green -g 72x59 -T "
+ED_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
 ED_TITLE="${NAME} - rfc${FN}.txt"
 PAGER=`which less`
 
