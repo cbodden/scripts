@@ -45,8 +45,7 @@ FN=`printf "%04d" ${2} | xargs`
 
 ## temp file and trap statement - trap for clean end
 [[ $(uname) == "Linux" ]] && TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX) \
-  || [[ $(uname) == "Darwin" ]] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX) \
-# TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX)
+  || [[ $(uname) == "Darwin" ]] && TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX)
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
 ## editor / viewer settings
