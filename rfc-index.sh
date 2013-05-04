@@ -3,8 +3,13 @@
 # vim:set ts=2 sw=4 noexpandtab:
 # <cesar@pissedoffadmins.com> 2013
 
+#
+# todo :
+# add history with rfc number read - time stamped
+
+
 set -e
-## set -o pipefail
+set -o pipefail
 ## set -v
 ## set -x
 
@@ -12,7 +17,7 @@ NAME=$(basename $0)
 
 version()
 {
-  local VER="0.2"
+  local VER="0.3"
   printf -- "%s\n" "${NAME} version ${VER}"
   printf -- "%s\n" "<cesar@pissedoffadmins.com> 2013"
   printf -- "%s\n"
@@ -83,11 +88,11 @@ case "${1}" in
 
   'read'|'show')
     printf -- "%s\n" "Grabbing ${FN}"
-    curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt ||
-      [ $? -eq 22 ] && ERRVAL=$? | \
+    curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt | \
+      ## || [ $? -eq 22 ] && ERRVAL=$? | \
       awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
       sed '/\f/d' > "${TMP_FILE}"
-    [[ ${ERRVAL} -eq 22 ]] && printf -- "\nFailed grabbing RFC ${2}\n"; exit 1
+    # [[ ${ERRVAL} -eq 22 ]] && printf -- "\nFailed grabbing RFC ${2}\n"; exit 1
     printf -- "\ndone grabbing\n"
     ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
   ;;
