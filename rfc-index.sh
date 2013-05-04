@@ -1,9 +1,13 @@
-#!/bin/bash -xx
+#!/bin/bash
 
 # vim:set ts=2 sw=4 noexpandtab:
 # <cesar@pissedoffadmins.com> 2013
 
 set -e
+## set -o pipefail
+## set -v
+## set -x
+
 NAME=$(basename $0)
 
 version()
@@ -55,12 +59,7 @@ trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
 
 # emulator / viewer settings
-# command -v SHELL
-[[ -n $(which mrxvt 2>/dev/null) ]] && EM="mrxvt" \
-  || [[ -n $(which xterm 2>/dev/null) ]] && EM="xterm" \
-  || [[ -n $(which urxvt 2>/dev/null) ]] && EM="urxvt" \
-  || [[ -n $(which rxvt 2>/dev/null) ]] && EM="rxvt" \
-
+[[ -n $(command -v xterm) ]] && EM="xterm" || EM="urxvt"
 case "${EM}" in
   'xterm') EM=$(which xterm 2>/dev/null);;
   'mrxvt') EM=$(which mrxvt 2>/dev/null);;
@@ -83,10 +82,12 @@ case "${1}" in
   ;;
 
   'read'|'show')
-    printf -- "%s" "Grabbing ${FN}"
-    wget -O- -q http://www.rfc-editor.org/rfc/rfc${2}.txt | \
+    printf -- "%s\n" "Grabbing ${FN}"
+    curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt ||
+      [ $? -eq 22 ] && ERRVAL=$? | \
       awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
       sed '/\f/d' > "${TMP_FILE}"
+    [[ ${ERRVAL} -eq 22 ]] && printf -- "\nFailed grabbing RFC ${2}\n"; exit 1
     printf -- "\ndone grabbing\n"
     ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
   ;;
