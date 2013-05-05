@@ -3,15 +3,11 @@
 # vim:set ts=2 sw=4 noexpandtab:
 # <cesar@pissedoffadmins.com> 2013
 
-#
 # todo :
 # add history with rfc number read - time stamped
 
-
 set -e
 set -o pipefail
-## set -v
-## set -x
 
 NAME=$(basename $0)
 
@@ -45,15 +41,12 @@ usage()
   printf -- "%s\n"
 }
 
-
 # check if $# -eq 2 && $2 is an integer
 [ $# -eq 2 ] || { version; descrip; usage; exit 1; }
 [ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
 
-
 # prepend zeros to make id number <####>
 FN=`printf "%04d" ${2} | xargs`
-
 
 # temp file and trap statement - trap for clean end
 case "$(uname 2>/dev/null)" in
@@ -61,7 +54,6 @@ case "$(uname 2>/dev/null)" in
   'Darwin') TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX);;
 esac
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
-
 
 # emulator / viewer settings
 [[ -n $(command -v xterm) ]] && EM="xterm" || EM="urxvt"
@@ -75,7 +67,6 @@ EM_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
 EM_TITLE="${NAME} - rfc${FN}.txt"
 PAGER=`which less`
 
-
 case "${1}" in
   'name'|'index')
     case "${FN}" in
@@ -87,14 +78,17 @@ case "${1}" in
   ;;
 
   'read'|'show')
-    printf -- "%s\n" "Grabbing ${FN}"
-    curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt | \
-      ## || [ $? -eq 22 ] && ERRVAL=$? | \
-      awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
-      sed '/\f/d' > "${TMP_FILE}"
-    # [[ ${ERRVAL} -eq 22 ]] && printf -- "\nFailed grabbing RFC ${2}\n"; exit 1
-    printf -- "\ndone grabbing\n"
-    ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
+    if [ -z $(wget -q --spider http://www.rfc-editor.org/rfc/rfc${2}.txt || echo $?) ]; then
+      printf -- "%s\n" "Grabbing ${FN}"
+      curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt | \
+        ## || [ $? -eq 22 ] && ERRVAL=$? | \
+        awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
+        sed '/\f/d' > "${TMP_FILE}"
+      printf -- "\ndone grabbing\n"
+      ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
+    else
+      printf -- "File does not exist. Double check RFC number : ${2}\n"
+    fi
   ;;
   *) printf -- "\n"; usage; exit 1;;
 esac
