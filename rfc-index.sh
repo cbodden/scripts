@@ -13,7 +13,7 @@ NAME=$(basename $0)
 
 version()
 {
-  local VER="0.3"
+  local VER="0.18"
   printf -- "%s\n" "${NAME} version ${VER}"
   printf -- "%s\n" "<cesar@pissedoffadmins.com> 2013"
   printf -- "%s\n"
@@ -86,7 +86,8 @@ case "${1}" in
       printf -- "%s\n" "Showing ${FN}"
       ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
     else
-      printf -- "File does not exist. Double check RFC number : ${2}\n"
+      printf -- "%s\n" "File does not exist. Check RFC number : ${FN}"
+      usage
     fi
   ;;
   *) printf -- "\n"; usage; exit 1;;
