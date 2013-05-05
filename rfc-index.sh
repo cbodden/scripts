@@ -81,7 +81,6 @@ case "${1}" in
     if [ -z $(wget -q --spider http://www.rfc-editor.org/rfc/rfc${2}.txt || echo $?) ]; then
       printf -- "%s\n" "Downloading ${FN}"
       curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt | \
-        ## || [ $? -eq 22 ] && ERRVAL=$? | \
         awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
         sed '/\f/d' > "${TMP_FILE}"
       printf -- "%s\n" "Showing ${FN}"
