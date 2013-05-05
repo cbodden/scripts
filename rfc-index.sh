@@ -4,7 +4,7 @@
 # <cesar@pissedoffadmins.com> 2013
 
 # todo :
-# add history with rfc number read - time stamped
+# add history with rfc number read - time stamped (function)
 
 set -e
 set -o pipefail
@@ -79,12 +79,12 @@ case "${1}" in
 
   'read'|'show')
     if [ -z $(wget -q --spider http://www.rfc-editor.org/rfc/rfc${2}.txt || echo $?) ]; then
-      printf -- "%s\n" "Grabbing ${FN}"
+      printf -- "%s\n" "Downloading ${FN}"
       curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt | \
         ## || [ $? -eq 22 ] && ERRVAL=$? | \
         awk '{line++; print}; /\f/ {for (i=line; i<=58; i++) print ""; line=0}' | \
         sed '/\f/d' > "${TMP_FILE}"
-      printf -- "\ndone grabbing\n"
+      printf -- "%s\n" "Showing ${FN}"
       ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
     else
       printf -- "File does not exist. Double check RFC number : ${2}\n"
