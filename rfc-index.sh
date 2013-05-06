@@ -30,12 +30,25 @@ EOL
 
 usage()
 {
+  clear
   printf -- "%s\n"
-  printf -- "%s\n" "Usage: ${NAME} <name|read> <####>"
+  printf -- "%s\n" "Usage: ${NAME} <name|read|search> <####>"
+  printf -- "%s\n"
   printf -- "%s\n" "Usage examples:"
-  printf -- "%s\n" "  ${NAME} name 3334     # displays RFC 3334 index"
+  printf -- "%s\n" "  ${NAME} name 3334     # displays RFC 3334 name"
   printf -- "%s\n" "    ex: 3334 Policy-Based Accounting. T. Zseby, S. Zander, C. Carle. October"
   printf -- "%s\n" "             2002. (Format: TXT=103014 bytes) (Status: EXPERIMENTAL)"
+  printf -- "%s\n"
+  printf -- "%s\n" "  ${NAME} search <term> # Displays index of matches with RFC #'s"
+  printf -- "%s\n" "    ex: ${NAME} search transport"
+  printf -- "%s\n"
+  printf -- "%s\n" "        0905 ISO Transport Protocol specification ISO DP 8073. ISO. April"
+  printf -- "%s\n" "             1984. (Format: TXT=249214 bytes) (Obsoletes RFC0892) (Status:"
+  printf -- "%s\n" "             UNKNOWN)"
+  printf -- "%s\n"
+  printf -- "%s\n" "        0939 Executive summary of the NRC report on transport protocols for"
+  printf -- "%s\n" "             Department of Defense data networks. National Research Council."
+  printf -- "%s\n" "             February 1985. (Format: TXT=42345 bytes) (Status: UNKNOWN)"
   printf -- "%s\n"
   printf -- "%s\n" "  ${NAME} read 1443     # read RFC 1443"
   printf -- "%s\n"
@@ -60,9 +73,9 @@ fi
 # emulator / viewer settings
 [[ -n $(command -v xterm) ]] && EM="xterm" || EM="urxvt"
 case "${EM}" in
-  'xterm') EM=$(which xterm 2>/dev/null);;
-  'mrxvt') EM=$(which mrxvt 2>/dev/null);;
-  'urxvt') EM=$(which urxvt 2>/dev/null);;
+  'xterm') EM=$(which xterm 2>/dev/null) ;;
+  'mrxvt') EM=$(which mrxvt 2>/dev/null) ;;
+  'urxvt') EM=$(which urxvt 2>/dev/null) ;;
 esac
 
 EM_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
@@ -70,7 +83,7 @@ EM_TITLE="${NAME} - rfc${FN}.txt"
 PAGER=`which less`
 
 case "${1}" in
-  'name'|'index')
+  'name'|'-n')
     case "${FN}" in
       [0-9]|[[0-9][0-9]|[0-9][0-9][0-9]|[0-9][0-9][0-9][0-9])
       curl -s http://www.rfc-editor.org/rfc/rfc-index.txt | \
@@ -79,7 +92,7 @@ case "${1}" in
     esac
   ;;
 
-  'read'|'show')
+  'read'|'-r')
     if [ -z $(wget -q --spider http://www.rfc-editor.org/rfc/rfc${2}.txt || echo $?) ]; then
       printf -- "%s\n" "Downloading ${FN}"
       curl -f -s http://www.rfc-editor.org/rfc/rfc${2}.txt | \
@@ -93,7 +106,7 @@ case "${1}" in
     fi
   ;;
 
-  'search')
+  'search'|'-s')
     F=`echo ${2} | head -c 1`
       FU=`echo ${F} | tr -s '[:lower:]' '[:upper:]'`
       FL=`echo ${F} | tr -s '[:upper:]' '[:lower:]'`
