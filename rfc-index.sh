@@ -87,8 +87,9 @@ case "${1}" in
     case "${FN}" in
       [0-9]|[[0-9][0-9]|[0-9][0-9][0-9]|[0-9][0-9][0-9][0-9])
       curl -s http://www.rfc-editor.org/rfc/rfc-index.txt | \
-        awk '/^'${FN}'/ {do_print=1} do_print==1 {print} NF==0 {do_print=0}';;
-    *) printf -- "Error: unknown parameter '%s'\n" "$2"; usage; exit 1;;
+        awk '/^'${FN}'/ {do_print=1} do_print==1 {print} NF==0 {do_print=0}'
+      ;;
+    *) printf -- "Error: unknown parameter '%s'\n" "$2"; usage; exit 1 ;;
     esac
   ;;
 
@@ -117,5 +118,5 @@ case "${1}" in
     ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
   ;;
 
-  *) printf -- "\n"; usage; exit 1;;
+  *) printf -- "\n"; usage; exit 1 ;;
 esac
