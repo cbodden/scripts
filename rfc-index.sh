@@ -41,19 +41,21 @@ usage()
   printf -- "%s\n"
 }
 
-# check if $# -eq 2 && $2 is an integer
-[ $# -eq 2 ] || { version; descrip; usage; exit 1; }
-[ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
-
-# prepend zeros to make id number <####>
-FN=`printf "%04d" ${2} | xargs`
-
 # temp file and trap statement - trap for clean end
 case "$(uname 2>/dev/null)" in
   'Linux') TMP_FILE=$(mktemp --tmpdir rfc.$$.XXXXXXXXXX);;
   'Darwin') TMP_FILE=$(mktemp rfc.$$.XXXXXXXXXX);;
 esac
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
+
+# check if $1 != "search"
+if [ $1 != "search" ]; then
+  # check if $# -eq 2 && $2 is an integer
+  [ $# -eq 2 ] || { version; descrip; usage; exit 1; }
+  [ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
+  # prepend zeros to make id number <####>
+  FN=`printf "%04d" ${2} | xargs`
+fi
 
 # emulator / viewer settings
 [[ -n $(command -v xterm) ]] && EM="xterm" || EM="urxvt"
@@ -90,5 +92,17 @@ case "${1}" in
       usage
     fi
   ;;
+
+  'search')
+    F=`echo ${2} | head -c 1`
+      FU=`echo ${F} | tr -s '[:lower:]' '[:upper:]'`
+      FL=`echo ${F} | tr -s '[:upper:]' '[:lower:]'`
+    CW=`echo ${2} | cut -c2-`
+    curl -s http://www.rfc-editor.org/rfc/rfc-index.txt | \
+      awk 'BEGIN{FS="\n";RS="";ORS="\n\n"}/'[${FU}${FL}]${CW}'/' > "${TMP_FILE}"
+    printf -- "%s\n" "Showing serach for '${FL}${CW}'"
+    ${EM} ${EM_SETTINGS} "${EM_TITLE}" -e ${PAGER} "${TMP_FILE}"
+  ;;
+
   *) printf -- "\n"; usage; exit 1;;
 esac
