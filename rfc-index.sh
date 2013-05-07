@@ -13,7 +13,7 @@ NAME=$(basename $0)
 
 version()
 {
-  local VER="0.18"
+  local VER="0.20"
   printf -- "%s\n" "${NAME} version ${VER}"
   printf -- "%s\n" "<cesar@pissedoffadmins.com> 2013"
   printf -- "%s\n"
@@ -22,9 +22,9 @@ version()
 descrip()
 {
   cat <<EOL
-This is a simple script that will show you either the
-name / subject of an RFC or let you read an RFC just
-by supplying the number.
+This is a simple script that will show you either show the
+name / subject of an RFC, let you read an RFC, or let you
+search for an RFC.
 EOL
 }
 
@@ -62,7 +62,7 @@ esac
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
 # check if $1 != "search" || -s
-case $1 in
+case "${1}" in
   'search'|'-s') ;;
   'name'|'-n'|'read'|'-r')
     # check if $# -eq 2 && $2 is an integer
@@ -81,11 +81,11 @@ case "${EM}" in
   'mrxvt') EM=$(which mrxvt 2>/dev/null) ;;
   'urxvt') EM=$(which urxvt 2>/dev/null) ;;
 esac
-
 EM_SETTINGS="-fg green -bg black -bd green -g 72x59 -T"
 EM_TITLE="${NAME} - rfc${FN}.txt"
 PAGER=`which less`
 
+# begin working section of the script
 case "${1}" in
   'name'|'-n')
     case "${FN}" in
