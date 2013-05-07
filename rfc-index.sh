@@ -32,7 +32,7 @@ usage()
 {
   clear
   printf -- "%s\n"
-  printf -- "%s\n" "Usage: ${NAME} <name|read|search> <####>"
+  printf -- "%s\n" "Usage: ${NAME} <name (-n)|read (-r)|search (-s)> <####>"
   printf -- "%s\n"
   printf -- "%s\n" "Usage examples:"
   printf -- "%s\n" "  ${NAME} name 3334     # displays RFC 3334 name"
@@ -61,14 +61,18 @@ case "$(uname 2>/dev/null)" in
 esac
 trap "rm -rf ${TMP_FILE}" 0 1 2 3 15
 
-# check if $1 != "search"
-if [ $1 != "search" ]; then
-  # check if $# -eq 2 && $2 is an integer
-  [ $# -eq 2 ] || { version; descrip; usage; exit 1; }
-  [ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
-  # prepend zeros to make id number <####>
-  FN=`printf "%04d" ${2} | xargs`
-fi
+# check if $1 != "search" || -s
+case $1 in
+  'search'|'-s') ;;
+  'name'|'-n'|'read'|'-r')
+    # check if $# -eq 2 && $2 is an integer
+    [ $# -eq 2 ] || { version; descrip; usage; exit 1; }
+    [ ${2} -ne 0 -o ${2} -eq 0 2>/dev/null ] || { version; descrip; usage; exit 1; }
+    # prepend zeros to make id number <####>
+    FN=`printf "%04d" ${2} | xargs`
+  ;;
+  *) version; descrip; usage; exit 1 ;;
+esac
 
 # emulator / viewer settings
 [[ -n $(command -v xterm) ]] && EM="xterm" || EM="urxvt"
