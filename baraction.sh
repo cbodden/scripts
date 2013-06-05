@@ -33,7 +33,7 @@ CPU(){
     (( COUNT++ ))
   done
   CPUFREQ_OUT="CPU Speeds: ${SPEED_OUT}"
-  CPULOAD_OUT="Load:$(uptime | awk -F'[,|:]' '{print $8, $9, $10}')"
+  CPULOAD_OUT="$(awk '{print "Load:", $1, $2, $3}' /proc/loadavg)"
 }
 
 MEM(){
@@ -56,22 +56,21 @@ WLAN(){
   PROC_WIFI=/proc/net/wireless
   WLAN_IFACE=$(cat ${PROC_WIFI} | awk 'END{gsub(":","",$1); print $1}')
   ESSID=`${IWCONFIG} $(echo $WLAN_IFACE) | awk 'NR>1 {exit} {print $NF}'`
-  eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_QULTY=%s", $3}')
-  eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_SIGNL=%s", $4}')
-  eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_NOISE=%s", $5}')
-  BCSCRIPT="scale=0;a=100*$WLAN_QULTY/70;print a"
-  WLAN_QPCT=`echo $BCSCRIPT | bc -l`
+  eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_QLT=%s;", $3}')
+  eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_SIG=%s;", $4}')
+  eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_NS=%s;", $5}')
+  BCSCRIPT="scale=0;a=100*$WLAN_QLT/70;print a"
+  WLAN_QPC=`echo $BCSCRIPT | bc -l`
   POWER=`${IWCONFIG} 2>/dev/null | awk -F= '/Tx-Power/ {print $3}'`
-  WLAN_OUT="$ESSID Q=$WLAN_QPCT% S/N="$WLAN_SIGNL"/"$WLAN_NOISE"dBm Tx="$POWER
+  WLAN_OUT="$ESSID Q=${WLAN_QPC}% S/N=${WLAN_SIG}/${WLAN_NS} dBm Tx=${POWER}"
 }
 
 while :; do
-  TEMPERATURE ; BATTERY ; WLAN ; CPU ; MEM
+  BATTERY ; CPU ; MEM ; TEMPERATURE ; WLAN
   printf -- "%s\n" "$POWER_OUT" ; sleep $SLEEP_WAIT
   printf -- "%s\n" "$TEMP_OUT" ; sleep $SLEEP_WAIT
   printf -- "%s\n" "$CPUFREQ_OUT" ; sleep $SLEEP_WAIT
   printf -- "%s\n" "$CPULOAD_OUT" ; sleep $SLEEP_WAIT
   printf -- "%s\n" "$MEM_OUT" ; sleep $SLEEP_WAIT
   printf -- "%s\n" "$WLAN_OUT" ; sleep $SLEEP_WAIT
-  printf "\n\n"
 done
