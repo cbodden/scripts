@@ -8,7 +8,7 @@
 [[ -z $(which sensors) ]] && { echo "sensors not present"; exit 1; }
 
 # sleep interval for text output
-SLEEP=5
+SLEEP=3
 
 BATTERY(){
   BATT_COUNT=`$(which acpi) | wc -l`
@@ -34,6 +34,11 @@ CPU(){
   done
   CPUFREQ_OUT="CPU Speeds:${SPEED_OUT}"
   CPULOAD_OUT="$(awk '{print "Load:", $1, $2, $3}' /proc/loadavg)"
+}
+
+DISK(){
+  SDA1=$(df -h | awk '/sda1/ {print $6,"Used:",$3,"Avail:",$4,"Total:",$2}')
+  SDA3=$(df -h | awk '/sda3/ {print $6,"Used:",$3,"Avail:",$4,"Total:",$2}')
 }
 
 MEM(){
@@ -67,13 +72,15 @@ WLAN(){
 
 # printf "%-80.80s\n" "$POWER_OUT" ;  sleep $SLEEP
 while :; do
-  BATTERY ; CPU ; MEM ; TEMPERATURE ; WLAN
+  BATTERY ; CPU ; DISK ; MEM ; TEMPERATURE ; WLAN
   COL=$(echo $CPUFREQ_OUT | wc -m)
   printf "%${COL}s\n" |tr " " "=" ;
-  printf "%*s\n" $(((${#POWER_OUT}+$COL)/2)) "$POWER_OUT" ; sleep $SLEEP
-  printf "%*s\n" $(((${#TEMP_OUT}+$COL)/2)) "$TEMP_OUT" ; sleep $SLEEP
   printf "%*s\n" $(((${#CPUFREQ_OUT}+$COL)/2)) "$CPUFREQ_OUT" ; sleep $SLEEP
   printf "%*s\n" $(((${#CPULOAD_OUT}+$COL)/2)) "$CPULOAD_OUT" ; sleep $SLEEP
   printf "%*s\n" $(((${#MEM_OUT}+$COL)/2)) "$MEM_OUT" ; sleep $SLEEP
+  printf "%*s\n" $(((${#POWER_OUT}+$COL)/2)) "$POWER_OUT" ; sleep $SLEEP
+  printf "%*s\n" $(((${#SDA1}+$COL)/2)) "$SDA1" ; sleep $SLEEP
+  printf "%*s\n" $(((${#SDA3}+$COL)/2)) "$SDA3" ; sleep $SLEEP
+  printf "%*s\n" $(((${#TEMP_OUT}+$COL)/2)) "$TEMP_OUT" ; sleep $SLEEP
   printf "%*s\n" $(((${#WLAN_OUT}+$COL)/2)) "$WLAN_OUT" ; sleep $SLEEP
 done
