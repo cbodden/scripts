@@ -76,8 +76,8 @@ while :; do
   ARR_OUT=("`echo $CPUFREQ_OUT`" "`echo $CPULOAD_OUT`" "`echo $MEM_OUT`"
       "`echo $POWER_OUT`" "`echo $SDA1`" "`echo $SDA3`" "`echo $TEMP_OUT`"
       "`echo $WLAN_OUT`")
-  for i in "${ARR_OUT[@]}"; do
-    ROW=$(echo $i | wc -m)
-    printf "%*s\n" $((($ROW+$COL)/2)) "$i" ; sleep $SLEEP
+  for ARR in "${ARR_OUT[@]}"; do
+    ROW=$(echo $ARR | wc -m)
+    printf "%*s\n" $((($ROW+$COL)/2)) "$ARR" ; sleep $SLEEP
   done
 done
