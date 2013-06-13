@@ -1,13 +1,10 @@
 #!/bin/bash
 ## originally taken from : https://wiki.archlinux.org/index.php/Spectrwm
-## changed to add dynamic wifi device name and to support more than one battery
 
-# test for acpi, sensors, & cpufreq-info
 [[ -z $(which acpi) ]] && { echo "acpi not present"; exit 1; }
 [[ -z $(which cpufreq-info) ]] && { echo "cpufreq-info not present"; exit 1; }
 [[ -z $(which sensors) ]] && { echo "sensors not present"; exit 1; }
 
-# sleep interval for text output
 SLEEP=3
 
 BATTERY(){
@@ -66,21 +63,21 @@ WLAN(){
   eval $(cat ${PROC_WIFI} | awk 'gsub(/\./,"") {printf "WLAN_NS=%s;", $5}')
   BCSCRIPT="scale=0;a=100*$WLAN_QLT/70;print a"
   WLAN_QPC=`echo $BCSCRIPT | bc -l`
-  POWER=`${IWCONFIG} 2>/dev/null | awk -F= '/Tx-Power/ {print $3}'`
-  WLAN_OUT="$ESSID Q=${WLAN_QPC}% S/N=${WLAN_SIG}/${WLAN_NS} dBm Tx=${POWER}"
+  POWER=`${IWCONFIG} 2>/dev/null | awk -F= '/Tx-Power/ {print "Tx="$3}'`
+  RATE=`${IWCONFIG} 2>/dev/null | awk -F'[=|Tx]' '/Bit/ {print "Rate="$2}'`
+  WLAN_OUT="$ESSID Q=${WLAN_QPC}% S/N=${WLAN_SIG}/${WLAN_NS} ${RATE}${POWER}"
 }
 
-# printf "%-80.80s\n" "$POWER_OUT" ;  sleep $SLEEP
+  ## printf "%*s\n" $(((${#OUT}+$COL)/2)) "$OUT" ; sleep $SLEEP
 while :; do
   BATTERY ; CPU ; DISK ; MEM ; TEMPERATURE ; WLAN
   COL=$(echo $CPUFREQ_OUT | wc -m)
   printf "%${COL}s\n" |tr " " "=" ;
-  printf "%*s\n" $(((${#CPUFREQ_OUT}+$COL)/2)) "$CPUFREQ_OUT" ; sleep $SLEEP
-  printf "%*s\n" $(((${#CPULOAD_OUT}+$COL)/2)) "$CPULOAD_OUT" ; sleep $SLEEP
-  printf "%*s\n" $(((${#MEM_OUT}+$COL)/2)) "$MEM_OUT" ; sleep $SLEEP
-  printf "%*s\n" $(((${#POWER_OUT}+$COL)/2)) "$POWER_OUT" ; sleep $SLEEP
-  printf "%*s\n" $(((${#SDA1}+$COL)/2)) "$SDA1" ; sleep $SLEEP
-  printf "%*s\n" $(((${#SDA3}+$COL)/2)) "$SDA3" ; sleep $SLEEP
-  printf "%*s\n" $(((${#TEMP_OUT}+$COL)/2)) "$TEMP_OUT" ; sleep $SLEEP
-  printf "%*s\n" $(((${#WLAN_OUT}+$COL)/2)) "$WLAN_OUT" ; sleep $SLEEP
+  ARR_OUT=("`echo $CPUFREQ_OUT`" "`echo $CPULOAD_OUT`" "`echo $MEM_OUT`"
+      "`echo $POWER_OUT`" "`echo $SDA1`" "`echo $SDA3`" "`echo $TEMP_OUT`"
+      "`echo $WLAN_OUT`")
+  for i in "${ARR_OUT[@]}"; do
+    ROW=$(echo $i | wc -m)
+    printf "%*s\n" $((($ROW+$COL)/2)) "$i" ; sleep $SLEEP
+  done
 done
