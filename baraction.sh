@@ -32,7 +32,7 @@ CPU(){
     SPEED_OUT="${SPEED_OUT} ${SPEED}"
     (( COUNT++ ))
   done
-  CPUFREQ_OUT="CPU Speeds: ${SPEED_OUT}"
+  CPUFREQ_OUT="CPU Speeds:${SPEED_OUT}"
   CPULOAD_OUT="$(awk '{print "Load:", $1, $2, $3}' /proc/loadavg)"
 }
 
