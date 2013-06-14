@@ -5,7 +5,7 @@
 [[ -z $(which cpufreq-info) ]] && { echo "cpufreq-info not present"; exit 1; }
 [[ -z $(which sensors) ]] && { echo "sensors not present"; exit 1; }
 
-SLEEP=3
+SLEEP=1
 
 BATTERY(){
   BATT_COUNT=`$(which acpi) | wc -l`
@@ -68,7 +68,6 @@ WLAN(){
   WLAN_OUT="$ESSID Q=${WLAN_QPC}% S/N=${WLAN_SIG}/${WLAN_NS} ${RATE}${POWER}"
 }
 
-  ## printf "%*s\n" $(((${#OUT}+$COL)/2)) "$OUT" ; sleep $SLEEP
 while :; do
   BATTERY ; CPU ; DISK ; MEM ; TEMPERATURE ; WLAN
   COL=$(echo $CPUFREQ_OUT | wc -m)
@@ -78,6 +77,7 @@ while :; do
       "`echo $WLAN_OUT`")
   for ARR in "${ARR_OUT[@]}"; do
     ROW=$(echo $ARR | wc -m)
-    printf "%*s\n" $((($ROW+$COL)/2)) "$ARR" ; sleep $SLEEP
+    PAD=$((($COL - $ROW)/2))
+    printf "%${PAD}s%s%${PAD}s\n" "" "$ARR" "" ; sleep $SLEEP
   done
 done
