@@ -1,5 +1,6 @@
 #!/bin/bash
 ## originally taken from : https://wiki.archlinux.org/index.php/Spectrwm
+# vim:set ts=2 sw=4 noexpandtab:
 
 [[ -z $(which acpi) ]] && { echo "acpi not present"; exit 1; }
 [[ -z $(which cpufreq-info) ]] && { echo "cpufreq-info not present"; exit 1; }
