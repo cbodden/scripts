@@ -76,8 +76,9 @@ while :; do
       "`echo $POWER_OUT`" "`echo $SDA1`" "`echo $SDA3`" "`echo $TEMP_OUT`"
       "`echo $WLAN_OUT`")
   for ARR in "${ARR_OUT[@]}"; do
-    ROW=$(echo $ARR | wc -m)
-    PAD=$((($COL - $ROW)/2))
-    printf "%${PAD}s%s%${PAD}s\n" "" "$ARR" "" ; sleep $SLEEP
+    ROW=$(echo $ARR | wc -m) ; PAD=$((($COL - $ROW)/2))
+    LPAD=$PAD ; RPAD=$PAD ; TPAD=$(($ROW + $LPAD + RPAD))
+    [ ${TPAD} -lt ${COL} ] && { RPAD=$(( $RPAD + $COL - $TPAD )) ; }
+    printf "%${LPAD}s%s%${RPAD}s\n" "" "$ARR" "" ; sleep $SLEEP
   done
 done
