@@ -5,7 +5,7 @@
 [[ -z $(which cpufreq-info) ]] && { echo "cpufreq-info not present"; exit 1; }
 [[ -z $(which sensors) ]] && { echo "sensors not present"; exit 1; }
 
-SLEEP=1
+SLEEP=3
 
 BATTERY(){
   BATT_COUNT=`$(which acpi) | wc -l`
