@@ -6,26 +6,26 @@ RED=$(tput setaf 1)
 CLR=$(tput sgr0)
 
 ANSWERS=(
-"`echo -n "${GRN}●${CLR} It is certain"`"
-"`echo -n "${GRN}●${CLR} It is decidedly so"`"
-"`echo -n "${GRN}●${CLR} Without a doubt"`"
-"`echo -n "${GRN}●${CLR} Yes definitely"`"
-"`echo -n "${GRN}●${CLR} You may rely on it"`"
-"`echo -n "${GRN}●${CLR} As I see it yes"`"
-"`echo -n "${GRN}●${CLR} Most likely"`"
-"`echo -n "${GRN}●${CLR} Outlook good"`"
-"`echo -n "${GRN}●${CLR} Yes"`"
-"`echo -n "${GRN}●${CLR} Signs point to yes"`"
-"`echo -n "${YLW}●${CLR} Reply hazy try again"`"
-"`echo -n "${YLW}●${CLR} Ask again later"`"
-"`echo -n "${YLW}●${CLR} Better not tell you now"`"
-"`echo -n "${YLW}●${CLR} Cannot predict now"`"
-"`echo -n "${YLW}●${CLR} Concentrate and ask again"`"
-"`echo -n "${RED}●${CLR} Dont count on it"`"
-"`echo -n "${RED}●${CLR} My reply is no"`"
-"`echo -n "${RED}●${CLR} My sources say no"`"
-"`echo -n "${RED}●${CLR} Outlook not so good"`"
-"`echo -n "${RED}●${CLR} Very doubtful"`"
+"`printf  "${GRN}●${CLR} It is certain"`"
+"`printf  "${GRN}●${CLR} It is decidedly so"`"
+"`printf  "${GRN}●${CLR} Without a doubt"`"
+"`printf  "${GRN}●${CLR} Yes definitely"`"
+"`printf  "${GRN}●${CLR} You may rely on it"`"
+"`printf  "${GRN}●${CLR} As I see it yes"`"
+"`printf  "${GRN}●${CLR} Most likely"`"
+"`printf  "${GRN}●${CLR} Outlook good"`"
+"`printf  "${GRN}●${CLR} Yes"`"
+"`printf  "${GRN}●${CLR} Signs point to yes"`"
+"`printf  "${YLW}●${CLR} Reply hazy try again"`"
+"`printf  "${YLW}●${CLR} Ask again later"`"
+"`printf  "${YLW}●${CLR} Better not tell you now"`"
+"`printf  "${YLW}●${CLR} Cannot predict now"`"
+"`printf  "${YLW}●${CLR} Concentrate and ask again"`"
+"`printf  "${RED}●${CLR} Dont count on it"`"
+"`printf  "${RED}●${CLR} My reply is no"`"
+"`printf  "${RED}●${CLR} My sources say no"`"
+"`printf  "${RED}●${CLR} Outlook not so good"`"
+"`printf  "${RED}●${CLR} Very doubtful"`"
 )
 
 MOD=${#ANSWERS[*]}
@@ -34,5 +34,5 @@ WORD=${#ANSWERS[$INDEX]}
 
 echo $(tput clear)
 tput cup $(($(tput lines)/2)) $((($(tput cols)/2)-($WORD/2)+4))
-echo -n "${ANSWERS[$INDEX]}"
+printf  "${ANSWERS[$INDEX]}"
 tput cup $(tput lines) 0
