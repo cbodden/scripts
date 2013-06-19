@@ -32,7 +32,7 @@ MOD=${#ANSWERS[*]}
 INDEX=$(($RANDOM%$MOD))
 WORD=${#ANSWERS[$INDEX]}
 
-echo $(tput clear)
+printf $(tput clear)
 tput cup $(($(tput lines)/2)) $((($(tput cols)/2)-($WORD/2)+4))
 printf "${ANSWERS[$INDEX]}"
 tput cup $(tput lines) 0
