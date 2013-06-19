@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -z $(which tput 2>/dev/null) ] && { printf "%s\n" "tput not found"; exit 1; }
+
 GRN=$(tput setaf 2)
 YLW=$(tput setaf 3)
 RED=$(tput setaf 1)
