@@ -32,9 +32,9 @@ ANSWERS=(
 
 MOD=${#ANSWERS[*]}
 INDEX=$(($RANDOM%$MOD))
-WORD=${#ANSWERS[$INDEX]}
+W_CNT=$((${#ANSWERS[$INDEX]}-9))
 
 printf $(tput clear)
-tput cup $(($(tput lines)/2)) $((($(tput cols)/2)-($WORD/2)+4))
+tput cup $(($(tput lines)/2)) $((($(tput cols)/2)-($W_CNT/2)))
 printf "${ANSWERS[$INDEX]}"
 tput cup $(tput lines) 0
