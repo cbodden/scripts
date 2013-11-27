@@ -6,15 +6,12 @@
 
 [ -z $(which tput 2>/dev/null) ] && { printf "%s\n" "tput not found"; exit 1; }
 
-GRN=$(tput setaf 2)
-YLW=$(tput setaf 3)
-RED=$(tput setaf 1)
-CLR=$(tput sgr0)
+GRN=$(tput setaf 2); YLW=$(tput setaf 3); RED=$(tput setaf 1); CLR=$(tput sgr0)
 
-PRE=("" "Muthafuckin wise n powerful"
+PRE=("" "Muthafuckin wise n powerful" "The world famous" "The imperial"
   "That muthafucka wit two iron midgets for hands" "The almighty"
-  "The grand emperor" "The grand royal" "The illustrious"
-  "The imperial" "The magnificent" "The super supreme" "The world famous")
+  "The grand emperor" "The grand royal" "The illustrious" "The magnificent"
+  "The super supreme")
 PRE_INDEX=$(( $RANDOM % ${#PRE[*]} ))
 PRE_W_CNT=$(( ${#PRE[$PRE_INDEX]} ))
 PRE_OUT=${GRN}${PRE[$PRE_INDEX]}
@@ -34,7 +31,9 @@ else
   MID_OUT="${RED}`echo ${MID1[$MID1_INDEX]}|tr "_" " "`"
 fi
 
-POST=("" "the magnificent" "the panty melter" "the great")
+POST=("" "in the flesh" "the magnificent" "the panty melter" "the great"
+  "the wallabee champ" "via amazin wizardry n shit"
+  "the Stapleton gladiator namsayin")
 POST_INDEX=$(( $RANDOM % ${#POST[*]} ))
 POST_W_CNT=$(( ${#POST[$POST_INDEX]} ))
 POST_OUT=${YLW}${POST[$POST_INDEX]}${CLR}
