@@ -2,7 +2,6 @@
 #
 # this script generates names according to the names from :
 # http://www.bigghostlimited.com/?b2w=http://bigghostnahmean.blogspot.com/
-# made for fun
 
 [ -z $(which tput 2>/dev/null) ] && { printf "%s\n" "tput not found"; exit 1; }
 
