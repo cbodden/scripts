@@ -16,13 +16,13 @@ PRE_W_CNT=$(( ${#PRE[$PRE_INDEX]} ))
 PRE_OUT=${GRN}${PRE[$PRE_INDEX]}
 
 MID1=("Broccoli" "Caviar" "Cocaine" "Diamond" "Divine" "Galaxy" "Hands_of_Zeus"
-  "Phantom" "Shampoo" "Spartacus" "Swole_Ya_Eye" "Thor" "Volcano"
+  "Meteor" "Phantom" "Shampoo" "Spartacus" "Swole_Ya_Eye" "Thor" "Volcano"
   "Watch_Ya_Mouf")
 MID1_INDEX=$(( $RANDOM % ${#MID1[*]} ))
 MID1_W_CNT=$(( ${#MID1[$MID1_INDEX]} ))
 if [ `echo ${MID1[$MID1_INDEX]} | cut -d_ -f1 -s | wc -l` -lt 1 ]; then
   MID2=("Bundles" "Tusks" "Biceps" "Ligaments" "Snowcones" "Knuckles" "Raviolis"
-    "Bracelets" "Deluxe" "Molecules" "Hands")
+    "Bracelets" "Deluxe" "Molecules" "Hands" "Hammer")
   MID2_INDEX=$(( $RANDOM % ${#MID2[*]} ))
   MID_W_CNT=$(( ${#MID1[$MID1_INDEX]} + ${#MID2[$MID2_INDEX]} ))
   MID_OUT="${RED}${MID1[$MID1_INDEX]} ${MID2[$MID2_INDEX]}"
