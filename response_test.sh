@@ -9,8 +9,8 @@ clear
 SDIR="$(cd $(dirname $0) ; pwd)"
 NAME=$(basename $0)
 
-GRN=$(tput setaf 2); YLW=$(tput setaf 3); RED=$(tput setaf 1); CLR=$(tput sgr0)
-BLU=$(tput setaf 4)
+GRN=$(tput setaf 2); YLW=$(tput setaf 3); RED=$(tput setaf 1)
+BLU=$(tput setaf 4); CLR=$(tput sgr0)
 
 version() {
   local VER="0.01"
@@ -47,18 +47,18 @@ function create_tempfile() {
 
 function create_GSCRIPT() {
   cat > "${GSCRIPT}" << __GNUPLOT__
-  set terminal png size 1280,720  # output to a 1280x720 png file
-  set output "${GPNG}"            # save file to "${GPNG}"
-  set title "response testing"    # graph title
-  set size 1,1                    # aspect ratio for image size
+  set datafile separator '\t'     # Use tabs as delimiter
+  set format x "%S"               # *output* format for the x-axis tick labels
   set grid y                      # Draw gridlines oriented on the y axis
   set key left top                # Where to place the legend/key
-  set xdata time                  # x-series data is time data
+  set output "${GPNG}"            # save file to "${GPNG}"
+  set size 1,1                    # aspect ratio for image size
+  set terminal png size 1280,720  # output to a 1280x720 png file
   set timefmt "%s"                # *input* format of the time data
-  set format x "%S"               # *output* format for the x-axis tick labels
+  set title "response testing"    # graph title
+  set xdata time                  # x-series data is time data
   set xlabel 'seconds'            # Label the x-axis
   set ylabel "response time (ms)" # Label the y-axis
-  set datafile separator '\t'     # Use tabs as delimiter
   plot "${GDATA}" every ::2 using 2:5 title 'response time' with points
 __GNUPLOT__
 }
@@ -88,7 +88,6 @@ function gather_info() {
 }
 
 function run_ab() {
-echo test
   ab -v 1 -n ${REQS} -c ${CONC} -g "${GDATA}" \
     -t ${ABTIME} "http://${TURL}:${PORT}/"
 }
