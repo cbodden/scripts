@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# vim:set ts=2 sw=4 noexpandtab:
+# <cesar@pissedoffadmins.com> 2014
+
 set -e
 set -o pipefail
 clear
