@@ -69,7 +69,6 @@ function create_plot() {
   mv "${GPNG}" ${GPNG_MV}
   GPNG=${GPNG_MV}
   printf "\n${BLU}[*]${CLR} Created PNG file: ${RED}${GPNG_MV}${CLR}\n\n"
-  xv "${GPNG_MV}"
 }
 
 function main() {
