@@ -84,7 +84,7 @@ function gather_info() {
   printf "${BLU}[*]${CLR} Port to test against (Default 80)           : ${GRN}"
   read PORT
   [ -z ${PORT} ] && PORT=80
-  printf "${CLR}"
+  printf "${CLR}\n"
   return 0
 }
 
