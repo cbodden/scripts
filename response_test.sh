@@ -81,9 +81,10 @@ function gather_info() {
   [ -z ${TURL} ] && TURL="http://localhost"
   TURL="`echo ${TURL} | sed -e "s/http:\/\///g" -e "s/\///g"`"
 
-  printf "${BLU}[*]${CLR} Port to test against (Default 80)           : ${CLR}"
+  printf "${BLU}[*]${CLR} Port to test against (Default 80)           : ${GRN}"
   read PORT
   [ -z ${PORT} ] && PORT=80
+  printf "${CLR}"
   return 0
 }
 
