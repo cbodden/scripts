@@ -31,24 +31,6 @@ than having to do this by hand.
 EOL
 }
 
-function gather_info() {
-  printf "${BLU}[*]${CLR} How many requests (Default 400)             : ${GRN}"
-  read REQS
-  [ -z ${REQS} ] && REQS=400
-  printf "${BLU}[*]${CLR} How many concurrent connections (Default 10): ${GRN}"
-  read CONC
-  [ -z ${CONC} ] && CONC=10
-  printf "${BLU}[*]${CLR} For how long (Default 10 seconds)           : ${GRN}"
-  read ABTIME
-  [ -z ${ABTIME} ] && ABTIME=10
-  printf "${BLU}[*]${CLR} URL to test (Default http://localhost)      : ${GRN}"
-  read TURL
-  [ -z ${TURL} ] && TURL="http://localhost"
-  printf "${BLU}[*]${CLR} Port to test against (Default 80)           : ${CLR}"
-  read PORT
-  [ -z ${PORT} ] && PORT=80
-}
-
 function check_platform() {
   [ ! -z $(which gnuplot 2>/dev/null) ] && gnuplot_exe="$(which gnuplot)" ||
     { printf "${RED}Missing gnuplot${CLR}\n"; exit 1; }
@@ -81,8 +63,34 @@ function create_GSCRIPT() {
 __GNUPLOT__
 }
 
+function gather_info() {
+  printf "${BLU}[*]${CLR} How many requests (Default 400)             : ${GRN}"
+  read REQS
+  [ -z ${REQS} ] && REQS=400
+
+  printf "${BLU}[*]${CLR} How many concurrent connections (Default 10): ${GRN}"
+  read CONC
+  [ -z ${CONC} ] && CONC=10
+
+  printf "${BLU}[*]${CLR} For how long (Default 10 seconds)           : ${GRN}"
+  read ABTIME
+  [ -z ${ABTIME} ] && ABTIME=10
+
+  printf "${BLU}[*]${CLR} URL to test (Default http://localhost)      : ${GRN}"
+  read TURL
+  [ -z ${TURL} ] && TURL="http://localhost"
+  TURL="`echo ${TURL} | sed -e "s/http:\/\///g" -e "s/\///g"`"
+
+  printf "${BLU}[*]${CLR} Port to test against (Default 80)           : ${CLR}"
+  read PORT
+  [ -z ${PORT} ] && PORT=80
+  return 0
+}
+
 function run_ab() {
-  ab -v 1 -n ${REQS} -c ${CONC} -g "${GDATA}" -t ${ABTIME} "${TURL}:${PORT}/"
+echo test
+  ab -v 1 -n ${REQS} -c ${CONC} -g "${GDATA}" \
+    -t ${ABTIME} "http://${TURL}:${PORT}/"
 }
 
 function create_plot() {
