@@ -9,6 +9,25 @@ NAME=$(basename $0)
 GRN=$(tput setaf 2); YLW=$(tput setaf 3); RED=$(tput setaf 1); CLR=$(tput sgr0)
 BLU=$(tput setaf 4)
 
+version() {
+  local VER="0.01"
+cat <<EOL
+${NAME} version ${VER}
+Copyright (C) 2014 cesar@pissedoffadmins.com
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it.
+
+EOL
+}
+
+descrip() {
+  cat <<EOL
+This script uses apache bench to plot data to gnuplot to make it easier
+than having to do this by hand.
+
+EOL
+}
+
 function gather_info() {
   printf "${BLU}[*]${CLR} How many requests (Default 400)             : ${GRN}"
   read REQS
@@ -45,7 +64,7 @@ function create_GSCRIPT() {
   cat > "${GSCRIPT}" << __GNUPLOT__
   set terminal png size 1280,720  # output to a 1280x720 png file
   set output "${GPNG}"            # save file to "${GPNG}"
-  set title "Benchmark testing"   # graph title
+  set title "response testing"    # graph title
   set size 1,1                    # aspect ratio for image size
   set grid y                      # Draw gridlines oriented on the y axis
   set key left top                # Where to place the legend/key
