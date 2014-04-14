@@ -4,7 +4,7 @@ LANG=C
 set -e
 set -o pipefail
 NAME=$(basename $0)
-trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 0 1 2 3 9 15
+trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 # check for sudo / root
 R_UID="0"
@@ -53,7 +53,7 @@ kern_kexec()
       pause "Press [ENTER] to load ${KRN}. . ."
       kexec -e
     ;;
-    [Nn][Oo]|[Nn]|*) exit 0 ;;
+    [Nn][Oo]|[Nn]|*) printf "Quitting. . .\n" ; exit 0 ;;
   esac
 }
 
