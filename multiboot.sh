@@ -14,15 +14,14 @@
 #                If your distro automounts usb, this script will fail.
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
-#       CREATED: 04/15/2014
-#      REVISION: 7
+#       CREATED: 15 April 2014
+#      REVISION: 8
 #===============================================================================
 
 LANG=C
 set -e
 set -o pipefail
 set -o nounset
-# set -o errexit
 NAME=$(basename $0)
 trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
@@ -30,9 +29,8 @@ trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 R_UID="0"
 [[ "${UID}" -ne "${R_UID}" ]] && { printf "\nNeeds sudo\n" ; exit 1 ; }
 
-VOLNAME="MultiBoot"
-USBTMPDIR="usbtmpdir"
-GRUBCONF="/${USBTMPDIR}/boot/grub/grub.conf"
+USBTMPDIR="/usbtmpdir"
+GRUBCONF="${USBTMPDIR}/boot/grub/grub.conf"
 
 function disk_detect()
 {
@@ -83,17 +81,19 @@ EOF
 function disk_grub2()
 {
   ## begin grub2 stuff
-  mkdir /${USBTMPDIR}
-  mount ${USBSTICK}1 /${USBTMPDIR}
-  grub2-install --no-floppy --root-directory=/${USBTMPDIR} ${USBSTICK}
-  mkdir /${USBTMPDIR}/iso/
+  mkdir ${USBTMPDIR}
+  mount ${USBSTICK}1 ${USBTMPDIR}
+  [[ -n $(which grub2-install 2>/dev/null) ]] &&
+    { grub2-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK} ; } ||
+    { grub-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK} ; }
+  mkdir ${USBTMPDIR}/iso/
 }
 
 function cleanup()
 {
   sync
   umount ${USBSTICK}1
-  rm /${USBTMPDIR} -rf
+  rm ${USBTMPDIR} -rf
 }
 
 function install_grub_header()
@@ -107,17 +107,18 @@ set menu_color_highlight=white/green
 
 function install_debian_amd64()
 {
-DL_ADDY=""
-IMAGE=""
+DL_ADDY="http://cdimage.debian.org/debian-cd/7.4.0/amd64/iso-cd/"
+IMAGE="debian-7.4.0-amd64-netinst.iso"
 
 echo "menuentry \"Debian netinst 7.4.0 amd64\" {
-  set isofile=\"/iso/debian-7.4.0-amd64-netinst.iso\"
+  set isofile=\"/iso/${IMAGE}\"
   set bo1=\"vga=normal --\"
   loopback loop \$isofile
   linux (loop)/install.amd/vmlinuz \$bo1
   initrd (loop)/install.amd/initrd.gz
 }
 " >> ${GRUBCONF}
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_gentoo_amd64()
@@ -135,7 +136,7 @@ echo "menuentry \"Gentoo minimal 20140403 amd64\" {
   initrd (loop)/isolinux/gentoo.igz
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_gentoo_i386()
@@ -153,7 +154,7 @@ echo "menuentry \"Gentoo minimal 20140415 i386\" {
   initrd (loop)/isolinux/gentoo.igz
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_kali_amd64()
@@ -171,7 +172,7 @@ echo "menuentry \"Kali Linux 1.0.6 amd64\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_netbsd_i386()
@@ -188,9 +189,9 @@ echo "menuentry \"NetBSD 6.1.3 i386\" {
 
 function install_openbsd54_amd64()
 {
-DL_ADDY="http://ftp.openbsd.org/pub/OpenBSD/5.4/amd64/"
+DL_ADDY="http://openbsd.mirrors.hoobly.com/5.4/amd64/"
 WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject index.html"
-WGET_PATH="--directory-prefix=/${USBTMPDIR}5.4/amd64/"
+WGET_PATH="--directory-prefix=${USBTMPDIR}/5.4/amd64/"
 
 echo "menuentry \"OpenBSD 5.4 amd64\" {
   insmod ext2
@@ -203,9 +204,9 @@ wget -nd -r ${DL_ADDY} ${WGET_OPTIONS} ${WGET_PATH}
 
 function install_openbsd54_i386()
 {
-DL_ADDY="http://ftp.openbsd.org/pub/OpenBSD/5.4/i386/"
+DL_ADDY="http://openbsd.mirrors.hoobly.com/5.4/i386/"
 WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject index.html"
-WGET_PATH="--directory-prefix=/${USBTMPDIR}5.4/i386/"
+WGET_PATH="--directory-prefix=${USBTMPDIR}/5.4/i386/"
 
 echo "menuentry \"OpenBSD 5.4 i386\" {
   insmod ext2
@@ -232,7 +233,7 @@ echo "menuentry \"Tails 0.23 i386\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_ubuntu12s_amd64()
@@ -241,14 +242,14 @@ DL_ADDY="http://releases.ubuntu.com/12.04.4/"
 IMAGE="ubuntu-12.04.4-server-amd64.iso"
 
 echo "menuentry \"Ubuntu 12.04 server amd64\" {
-  set isofile=\"/iso/i${IMAGE}\"
+  set isofile=\"/iso/${IMAGE}\"
   set bo1=\"boot=casper iso-scan/filename=\$isofile noprompt noeject\"
   loopback loop (hd0,1)\$isofile
   linux (loop)/casper/vmlinuz.efi \$bo1
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_ubuntu13d_amd64()
@@ -264,7 +265,7 @@ echo "menuentry \"Ubuntu 13.10 desktop amd64\" {
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_ubuntu13d_i386()
@@ -273,14 +274,14 @@ DL_ADDY="http://releases.ubuntu.com/13.10/"
 IMAGE="ubuntu-13.10-desktop-i386.iso"
 
 echo "menuentry \"Ubuntu 13.10 desktop i386\" {
-  set isofile=\"/iso/ubuntu-13.10-desktop-i386.iso\"
+  set isofile=\"/iso/${IMAGE}\"
   set bo1=\"boot=casper iso-scan/filename=\$isofile noprompt noeject\"
   loopback loop (hd0,1)\$isofile
   linux (loop)/casper/vmlinuz \$bo1
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=/${USBTMPDIR}/iso/
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 #### functions to run below this line ####
