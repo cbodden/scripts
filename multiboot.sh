@@ -30,7 +30,7 @@ R_UID="0"
 [[ "${UID}" -ne "${R_UID}" ]] && { printf "\nNeeds sudo\n" ; exit 1 ; }
 
 USBTMPDIR="/usbtmpdir"
-GRUBCONF="${USBTMPDIR}/boot/grub/grub.conf"
+GRUBCONF="${USBTMPDIR}/boot/grub/grub.cfg"
 
 function disk_detect()
 {
