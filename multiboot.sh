@@ -77,7 +77,6 @@ c
 a
 w
 EOF
-  # mkfs.vfat -n ${VOLNAME} /dev/${USBSTICK}1
   mkfs.vfat ${USBSTICK}1
 }
 
@@ -290,15 +289,15 @@ disk_detect
 disk_action
 grub2
 grub_header
-## debian_amd64
+debian_amd64
 gentoo_amd64
-## gentoo_i386
-## kali_amd64
-## netbsd_i386
-## openbsd54_amd64
-## openbsd54_i386
-## tails_i386
-## ubuntu12s_amd64
-## ubuntu13d_amd64
-## ubuntu13d_i386
+gentoo_i386
+kali_amd64
+netbsd_i386
+openbsd54_amd64
+openbsd54_i386
+tails_i386
+ubuntu12s_amd64
+ubuntu13d_amd64
+ubuntu13d_i386
 cleanup
