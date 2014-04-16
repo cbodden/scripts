@@ -73,7 +73,7 @@ function grub2()
 function cleanup()
 {
   sync
-  umount /dev/${USBSTICK}
+  umount /dev/${USBSTICK}1
   rm /${USBTMPDIR} -rf
 }
 
