@@ -15,7 +15,7 @@
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 15 April 2014
-#      REVISION: 8
+#      REVISION: 9
 #===============================================================================
 
 LANG=C
@@ -116,6 +116,40 @@ echo "menuentry \"Debian netinst 7.4.0 amd64\" {
   loopback loop \$isofile
   linux (loop)/install.amd/vmlinuz \$bo1
   initrd (loop)/install.amd/initrd.gz
+}
+" >> ${GRUBCONF}
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+}
+
+function install_fedora_amd64()
+{
+DL_ADDY="download.fedoraproject.org/pub/fedora/linux/releases/20/Live/x86_64/"
+IMAGE="Fedora-Live-Desktop-x86_64-20-1.iso"
+
+echo "menuentry \"Fedora desktop 20 amd64\" {
+  set isofile=\"/iso/${IMAGE}\"
+  set bo1=\"root=live rootfstype=auto ro rd.live.image quiet rhgb rd.luks=0\"
+  set bo2=\"rd.md=0 rd.dm=0 iso-scan/filename=\$isofile\"
+  loopback loop \$isofile
+  linux (loop)/isolinux/vmlinuz0 \$bo1 \$bo2
+  initrd (loop)/isolinux/initrd0.img
+}
+" >> ${GRUBCONF}
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+}
+
+function install_fedora_i386()
+{
+DL_ADDY="download.fedoraproject.org/pub/fedora/linux/releases/20/Live/i386/"
+IMAGE="Fedora-Live-Desktop-i686-20-1.iso"
+
+echo "menuentry \"Fedora desktop 20 i386\" {
+  set isofile=\"/iso/${IMAGE}\"
+  set bo1=\"root=live rootfstype=auto ro rd.live.image quiet rhgb rd.luks=0\"
+  set bo2=\"rd.md=0 rd.dm=0 iso-scan/filename=\$isofile\"
+  loopback loop \$isofile
+  linux (loop)/isolinux/vmlinuz0 \$bo1 \$bo2
+  initrd (loop)/isolinux/initrd0.img
 }
 " >> ${GRUBCONF}
 wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
@@ -225,6 +259,20 @@ IMAGE="tails-i386-0.23.iso"
 echo "menuentry \"Tails 0.23 i386\" {
   set isofile=\"/iso/${IMAGE}\"
   set isouuid=\"/dev/disk/by-uuid/${UUID}/iso/${IMAGE}\"
+  set bo1=\"boot=live config\"
+  loopback loop \$isofile
+  linux (loop)/live/vmlinuz fromiso=\$isouuid \$bo1
+  initrd (loop)/live/initrd.img
+}
+" >> ${GRUBCONF}
+wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+}
+
+function install_tails_i386_masq()
+{
+echo "menuentry \"Tails 0.23 i386 masquerade\" {
+  set isofile=\"/iso/${IMAGE}\"
+  set isouuid=\"/dev/disk/by-uuid/${UUID}/iso/${IMAGE}\"
   set bo1=\"boot=live config live-media=removable nopersistent noprompt quiet\"
   set bo2=\"timezone=Etc/UTC block.events_dfl_poll_msecs=1000 splash\"
   set bo3=\"nox11autologin module=Tails truecrypt quiet\"
@@ -233,7 +281,6 @@ echo "menuentry \"Tails 0.23 i386\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_ubuntu12s_amd64()
@@ -291,6 +338,8 @@ disk_action
 disk_grub2
 install_grub_header
 install_debian_amd64
+install_fedora_amd64
+install_fedora_i386
 install_gentoo_amd64
 install_gentoo_i386
 install_kali_amd64
@@ -298,6 +347,7 @@ install_netbsd_i386
 install_openbsd54_amd64
 install_openbsd54_i386
 install_tails_i386
+install_tails_i386_masq
 install_ubuntu12s_amd64
 install_ubuntu13d_amd64
 install_ubuntu13d_i386
