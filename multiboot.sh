@@ -126,14 +126,15 @@ function install_fedora()
   VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    [[ "$1" == "i386" ]] && { 3VER="i386" ; 6VER="i686" ; } ||
-      { 3VER="$1" ; 6VER="$1" ; }
-    DL_ADDY="mirror.pnl.gov/fedora/linux/releases/${VER}/Live/${3VER}/"
-    IMAGE="Fedora-Live-Desktop-${6VER}-${VER}-1.iso"
+    [[ "$1" == i386 ]] && { VER_3="i386" ; VER_6="i686" ; } ||
+      { VER_3=$(echo ${1}) ; VER_6=$(echo ${1}) ; }
+    DL_ADDY="mirror.pnl.gov/fedora/linux/releases/${VER}/Live/${VER_3}/"
+    IMAGE="Fedora-Live-Desktop-${VER_6}-${VER}-1.iso"
     FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
-echo "menuentry \"Fedora desktop ${VER} ${3VER}\" ${FED_OPTS} {
+
+echo "menuentry \"Fedora desktop ${VER} ${VER_3}\" ${FED_OPTS} {
   insmod loopback
-  set isolabel=Fedora-Live-Desktop-${6VER}-${VER}-1
+  set isolabel=Fedora-Live-Desktop-${VER_6}-${VER}-1
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"iso-scan/filename=\$isofile\"
   set bo2=\"root=live:LABEL=\$isolabel ro rd.live.image quiet rhgb\"
@@ -148,13 +149,18 @@ echo "menuentry \"Fedora desktop ${VER} ${3VER}\" ${FED_OPTS} {
   done
 }
 
-function install_gentoo_amd64()
+function install_gentoo()
 {
-  VER="20140403"
-  DL_ADDY="http://distfiles.gentoo.org/releases/amd64/autobuilds/${VER}/"
-  IMAGE="install-amd64-minimal-${VER}.iso"
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    F_NAME="latest-install-${1}-minimal.txt"
+    VER_L=$(curl -f -s distfiles.gentoo.org/releases/${1}/autobuilds/${F_NAME} \
+      | tail -n 1 | cut -d"/" -f1 )
+    DL_ADDY="http://distfiles.gentoo.org/releases/${1}/autobuilds/${VER_L}/"
+    IMAGE="install-${1}-minimal-${VER_L}.iso"
 
-echo "menuentry \"Gentoo minimal ${VER} amd64\" {
+echo "menuentry \"Gentoo minimal ${VER_L} ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"root=/dev/ram0 init=/linuxrc nokeymap cdroot cdboot\"
   set bo2=\"looptype=squashfs loop=/image.squashfs initrd=gentoo.igz\"
@@ -164,26 +170,9 @@ echo "menuentry \"Gentoo minimal ${VER} amd64\" {
   initrd (loop)/isolinux/gentoo.igz
 }
 " >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
-}
-
-function install_gentoo_i386()
-{
-  VER="20140415"
-  DL_ADDY="http://distfiles.gentoo.org/releases/x86/autobuilds/${VER}/"
-  IMAGE="install-x86-minimal-${VER}.iso"
-
-echo "menuentry \"Gentoo minimal ${VER} i386\" {
-  set isofile=\"/iso/${IMAGE}\"
-  set bo1=\"root=/dev/ram0 init=/linuxrc nokeymap cdroot cdboot\"
-  set bo2=\"looptype=squashfs loop=/image.squashfs initrd=gentoo.igz\"
-  set bo3=\"usbcore.autosuspend=1 console=tty0 rootdelay=10 isoboot=\$isofile\"
-  loopback loop \$isofile
-  linux (loop)/isolinux/gentoo \$bo1 \$bo2 \$bo3
-  initrd (loop)/isolinux/gentoo.igz
-}
-" >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    shift 1
+  done
 }
 
 function install_kali()
@@ -287,52 +276,48 @@ echo "menuentry \"Tails ${VER} ${1} masquerade\" {
   done
 }
 
-function install_ubuntu12s_amd64()
+function install_ubuntus()
 {
-  DL_ADDY="http://releases.ubuntu.com/12.04.4/"
-  IMAGE="ubuntu-12.04.4-server-amd64.iso"
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    [[ "$1" == i386 ]] && EFI="" || EFI=".efi"
+    DL_ADDY="http://releases.ubuntu.com/${VER}/"
+    IMAGE="ubuntu-${VER}-server-${1}.iso"
 
-echo "menuentry \"Ubuntu 12.04 server amd64\" {
+echo "menuentry \"Ubuntu ${VER} server ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"boot=casper iso-scan/filename=\$isofile noprompt noeject\"
   loopback loop (hd0,1)\$isofile
-  linux (loop)/casper/vmlinuz.efi \$bo1
+  linux (loop)/casper/vmlinuz${EFI} \$bo1
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    shift 1
+  done
 }
 
-function install_ubuntu13d_amd64()
+function install_ubuntud()
 {
-  DL_ADDY="http://releases.ubuntu.com/13.10/"
-  IMAGE="ubuntu-13.10-desktop-amd64.iso"
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    [[ "$1" == i386 ]] && EFI="" || EFI=".efi"
+    DL_ADDY="http://releases.ubuntu.com/${VER}/"
+    IMAGE="ubuntu-${VER}-desktop-${1}.iso"
 
-echo "menuentry \"Ubuntu 13.10 desktop amd64\" {
+echo "menuentry \"Ubuntu ${VER} desktop ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"boot=casper iso-scan/filename=\$isofile noprompt noeject\"
   loopback loop (hd0,1)\$isofile
-  linux (loop)/casper/vmlinuz.efi \$bo1
+  linux (loop)/casper/vmlinuz${EFI} \$bo1
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
-}
-
-function install_ubuntu13d_i386()
-{
-  DL_ADDY="http://releases.ubuntu.com/13.10/"
-  IMAGE="ubuntu-13.10-desktop-i386.iso"
-
-echo "menuentry \"Ubuntu 13.10 desktop i386\" {
-  set isofile=\"/iso/${IMAGE}\"
-  set bo1=\"boot=casper iso-scan/filename=\$isofile noprompt noeject\"
-  loopback loop (hd0,1)\$isofile
-  linux (loop)/casper/vmlinuz \$bo1
-  initrd (loop)/casper/initrd.lz
-}
-" >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    shift 1
+  done
 }
 
 #### functions to run below this line ####
@@ -343,13 +328,11 @@ disk_grub2
 install_grub_header
 install_debian_amd64
 install_fedora 20 x86_64 i386
-install_gentoo_amd64
-install_gentoo_i386
+install_gentoo current amd64 x86
 install_kali 1.0.6 amd64
 install_netbsd 6.1.3 amd64 i386
 install_openbsd 5.4 amd64 i386
 install_tails 0.23 i386
-install_ubuntu12s_amd64
-install_ubuntu13d_amd64
-install_ubuntu13d_i386
+install_ubuntus 12.04.4 amd64 i386
+install_ubuntud 13.10 amd64 i386
 cleanup
