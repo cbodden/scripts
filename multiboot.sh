@@ -127,7 +127,7 @@ function install_fedora()
   shift 1
   while [[ $# -gt 0 ]]; do
     [[ "$1" == "i386" ]] && { 3VER="i386" ; 6VER="i686" ; } ||
-      { 3VER=$1 ; 6VER=$1 ; }
+      { 3VER="$1" ; 6VER="$1" ; }
     DL_ADDY="mirror.pnl.gov/fedora/linux/releases/${VER}/Live/${3VER}/"
     IMAGE="Fedora-Live-Desktop-${6VER}-${VER}-1.iso"
     FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
