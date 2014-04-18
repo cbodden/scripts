@@ -15,7 +15,7 @@
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 15 April 2014
-#      REVISION: 9
+#      REVISION: 10
 #===============================================================================
 
 LANG=C
@@ -47,7 +47,7 @@ function disk_detect()
         { USBSTICK="${DRV}"; } ;;
     esac
   DRV_CLEAN=$(echo "${USBSTICK}" | cut -d"/" -f3)
-  UUID=`ls -al /dev/disk/by-uuid/ | grep ${DRV_CLEAN}1 | awk '{print $9}'`
+  # UUID=`ls -al /dev/disk/by-uuid/ | grep ${DRV_CLEAN}1 | awk '{print $9}'`
   break
   done
 }
@@ -80,9 +80,9 @@ EOF
 
 function disk_grub2()
 {
-  ## begin grub2 stuff
   mkdir ${USBTMPDIR}
   mount ${USBSTICK}1 ${USBTMPDIR}
+  UUID=`ls -al /dev/disk/by-uuid/ | grep ${DRV_CLEAN}1 | awk '{print $9}'`
   [[ -n $(which grub2-install 2>/dev/null) ]] &&
     { grub2-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK} ; } ||
     { grub-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK} ; }
@@ -107,10 +107,11 @@ set menu_color_highlight=white/green
 
 function install_debian_amd64()
 {
-DL_ADDY="http://cdimage.debian.org/debian-cd/7.4.0/amd64/iso-cd/"
-IMAGE="debian-7.4.0-amd64-netinst.iso"
+VER="7.4.0"
+DL_ADDY="http://cdimage.debian.org/debian-cd/${VER}/amd64/iso-cd/"
+IMAGE="debian-${VER}-amd64-netinst.iso"
 
-echo "menuentry \"Debian netinst 7.4.0 amd64\" {
+echo "menuentry \"Debian netinst ${VER} amd64\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"vga=normal --\"
   loopback loop \$isofile
@@ -123,16 +124,21 @@ wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 
 function install_fedora_amd64()
 {
-DL_ADDY="download.fedoraproject.org/pub/fedora/linux/releases/20/Live/x86_64/"
-IMAGE="Fedora-Live-Desktop-x86_64-20-1.iso"
+VER="20"
+DL_ADDY="download.fedoraproject.org/pub/fedora/linux/releases/${VER}/Live/x86_64/"
+IMAGE="Fedora-Live-Desktop-x86_64-${VER}-1.iso"
+FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
 
-echo "menuentry \"Fedora desktop 20 amd64\" {
+echo "menuentry \"Fedora desktop ${VER} amd64\" ${FED_OPTS} {
+  insmod loopback
+  set isolabel=Fedora-Live-Desktop-x86_64-${VER}-1
   set isofile=\"/iso/${IMAGE}\"
-  set bo1=\"root=live rootfstype=auto ro rd.live.image quiet rhgb rd.luks=0\"
-  set bo2=\"rd.md=0 rd.dm=0 iso-scan/filename=\$isofile\"
-  loopback loop \$isofile
-  linux (loop)/isolinux/vmlinuz0 \$bo1 \$bo2
-  initrd (loop)/isolinux/initrd0.img
+  set bo1=\"iso-scan/filename=\$isofile\"
+  set bo2=\"root=live:LABEL=\$isolabel ro rd.live.image quiet rhgb\"
+  loopback loop (hd0,1)/\$isofile
+  set root=(loop)
+  linux /isolinux/vmlinuz0 \$bo1 \$bo2
+  initrd /isolinux/initrd0.img
 }
 " >> ${GRUBCONF}
 wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
@@ -140,27 +146,33 @@ wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 
 function install_fedora_i386()
 {
-DL_ADDY="download.fedoraproject.org/pub/fedora/linux/releases/20/Live/i386/"
-IMAGE="Fedora-Live-Desktop-i686-20-1.iso"
+VER="20"
+DL_ADDY="download.fedoraproject.org/pub/fedora/linux/releases/${VER}/Live/i386/"
+IMAGE="Fedora-Live-Desktop-i686-${VER}-1.iso"
+FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
 
-echo "menuentry \"Fedora desktop 20 i386\" {
+echo "menuentry \"Fedora desktop ${VER} i386\" ${FED_OPTS} {
+  insmod loopback
+  set isolabel=Fedora-Live-Desktop-i686-${VER}-1
   set isofile=\"/iso/${IMAGE}\"
-  set bo1=\"root=live rootfstype=auto ro rd.live.image quiet rhgb rd.luks=0\"
-  set bo2=\"rd.md=0 rd.dm=0 iso-scan/filename=\$isofile\"
-  loopback loop \$isofile
-  linux (loop)/isolinux/vmlinuz0 \$bo1 \$bo2
-  initrd (loop)/isolinux/initrd0.img
+  set bo1=\"iso-scan/filename=\$isofile\"
+  set bo2=\"root=live:LABEL=\$isolabel ro rd.live.image quiet rhgb\"
+  loopback loop (hd0,1)/\$isofile
+  set root=(loop)
+  linux /isolinux/vmlinuz0 \$bo1 \$bo2
+  initrd /isolinux/initrd0.img
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+ wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
 function install_gentoo_amd64()
 {
-DL_ADDY="http://distfiles.gentoo.org/releases/amd64/autobuilds/20140403/"
-IMAGE="install-amd64-minimal-20140403.iso"
+VER="20140403"
+DL_ADDY="http://distfiles.gentoo.org/releases/amd64/autobuilds/${VER}/"
+IMAGE="install-amd64-minimal-${VER}.iso"
 
-echo "menuentry \"Gentoo minimal 20140403 amd64\" {
+echo "menuentry \"Gentoo minimal ${VER} amd64\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"root=/dev/ram0 init=/linuxrc nokeymap cdroot cdboot\"
   set bo2=\"looptype=squashfs loop=/image.squashfs initrd=gentoo.igz\"
@@ -175,10 +187,11 @@ wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 
 function install_gentoo_i386()
 {
-DL_ADDY="http://distfiles.gentoo.org/releases/x86/autobuilds/20140415/"
-IMAGE="install-x86-minimal-20140415.iso"
+VER="20140415"
+DL_ADDY="http://distfiles.gentoo.org/releases/x86/autobuilds/${VER}/"
+IMAGE="install-x86-minimal-${VER}.iso"
 
-echo "menuentry \"Gentoo minimal 20140415 i386\" {
+echo "menuentry \"Gentoo minimal ${VER} i386\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"root=/dev/ram0 init=/linuxrc nokeymap cdroot cdboot\"
   set bo2=\"looptype=squashfs loop=/image.squashfs initrd=gentoo.igz\"
@@ -191,12 +204,15 @@ echo "menuentry \"Gentoo minimal 20140415 i386\" {
 wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
 }
 
-function install_kali_amd64()
+function install_kali()
 {
-DL_ADDY="http://cdimage.kali.org/kali-latest/amd64/"
-IMAGE="kali-linux-1.0.6-amd64.iso"
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    DL_ADDY="http://cdimage.kali.org/kali-latest/${1}/"
+    IMAGE="kali-linux-${VER}-${1}.iso"
 
-echo "menuentry \"Kali Linux 1.0.6 amd64\" {
+echo "menuentry \"Kali Linux ${VER} ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"findiso=\$isofile boot=live noconfig=sudo username=root\"
   set bo2=\"hostname=kali quiet splash\"
@@ -206,49 +222,53 @@ echo "menuentry \"Kali Linux 1.0.6 amd64\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    shift 1
+  done
 }
 
-function install_netbsd_i386()
+function install_netbsd()
 {
-echo "menuentry \"NetBSD 6.1.3 i386\" {
-  set isofile="/iso/NetBSD-6.1.3-i386.iso"
-  set root=(hd0,msdos1)
-  loopback loop \$isofile
-  insmod ext2
-  knetbsd /boot
-}
-" >> ${GRUBCONF}
-}
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    DL_ADDY="mirror.planetunix.net/pub/NetBSD/NetBSD-${VER}/${1}/"
+    KNL_DL="binary/kernel/netbsd-INSTALL.gz"
+    KNL="netbsd-INSTALL.gz"
+    ST="binary/sets/"
+    WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
+    WGET_PATH="--directory-prefix=${USBTMPDIR}/iso/netbsd/${VER}/${1}/"
 
-function install_openbsd54_amd64()
-{
-DL_ADDY="http://openbsd.mirrors.hoobly.com/5.4/amd64/"
-WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject index.html"
-WGET_PATH="--directory-prefix=${USBTMPDIR}/5.4/amd64/"
-
-echo "menuentry \"OpenBSD 5.4 amd64\" {
+echo "menuentry \"NetBSD ${VER} ${1}\" {
   insmod ext2
   set root=(hd0,msdos1)
-  kopenbsd /5.4/amd64/bsd.rd
+  knetbsd /iso/netbsd/${VER}/${1}/${KNL}
 }
 " >> ${GRUBCONF}
-wget -nd -r ${DL_ADDY} ${WGET_OPTIONS} ${WGET_PATH}
+    wget ${DL_ADDY}${ST} ${WGET_OPTIONS} ${WGET_PATH} || echo "NetBSD dloaded"
+    wget ${DL_ADDY}${KNL_DL} ${WGET_PATH} || echo "NetBSD kernel dloaded"
+    shift 1
+  done
 }
 
-function install_openbsd54_i386()
+function install_openbsd()
 {
-DL_ADDY="http://openbsd.mirrors.hoobly.com/5.4/i386/"
-WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject index.html"
-WGET_PATH="--directory-prefix=${USBTMPDIR}/5.4/i386/"
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    DL_ADDY="http://openbsd.mirrors.hoobly.com/${VER}/${1}/"
+    WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
+    WGET_PATH="--directory-prefix=${USBTMPDIR}/${VER}/${1}/"
 
-echo "menuentry \"OpenBSD 5.4 i386\" {
+echo "menuentry \"OpenBSD ${VER} ${1}\" {
   insmod ext2
   set root=(hd0,msdos1)
-  kopenbsd /5.4/i386/bsd.rd
+  kopenbsd /5.4/${1}/bsd.rd
 }
 " >> ${GRUBCONF}
-wget -nd -r ${DL_ADDY} ${WGET_OPTIONS} ${WGET_PATH}
+    wget ${DL_ADDY} ${WGET_OPTIONS} ${WGET_PATH} || echo "OpenBSD dloaded"
+    shift 1
+  done
 }
 
 function install_tails_i386()
@@ -337,18 +357,17 @@ disk_detect
 disk_action
 disk_grub2
 install_grub_header
-install_debian_amd64
-install_fedora_amd64
-install_fedora_i386
-install_gentoo_amd64
-install_gentoo_i386
-install_kali_amd64
-install_netbsd_i386
-install_openbsd54_amd64
-install_openbsd54_i386
-install_tails_i386
-install_tails_i386_masq
-install_ubuntu12s_amd64
-install_ubuntu13d_amd64
-install_ubuntu13d_i386
+# install_debian_amd64
+# install_fedora_amd64
+# install_fedora_i386
+# install_gentoo_amd64
+# install_gentoo_i386
+# install_kali 1.0.6 amd64
+install_netbsd 6.1.3 amd64 i386
+install_openbsd 5.4 amd64 i386
+# install_tails_i386
+# install_tails_i386_masq
+# install_ubuntu12s_amd64
+# install_ubuntu13d_amd64
+# install_ubuntu13d_i386
 cleanup
