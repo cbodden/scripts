@@ -253,12 +253,15 @@ echo "menuentry \"OpenBSD ${VER} ${1}\" {
   done
 }
 
-function install_tails_i386()
+function install_tails()
 {
-  DL_ADDY="http://dl.amnesia.boum.org/tails/stable/tails-i386-0.23/"
-  IMAGE="tails-i386-0.23.iso"
+  VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    DL_ADDY="http://dl.amnesia.boum.org/tails/stable/tails-${1}-${VER}/"
+    IMAGE="tails-${1}-${VER}.iso"
 
-echo "menuentry \"Tails 0.23 i386\" {
+echo "menuentry \"Tails ${VER} ${1} default\" {
   set isofile=\"/iso/${IMAGE}\"
   set isouuid=\"/dev/disk/by-uuid/${UUID}/iso/${IMAGE}\"
   set bo1=\"boot=live config\"
@@ -267,12 +270,8 @@ echo "menuentry \"Tails 0.23 i386\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
-}
 
-function install_tails_i386_masq()
-{
-echo "menuentry \"Tails 0.23 i386 masquerade\" {
+echo "menuentry \"Tails ${VER} ${1} masquerade\" {
   set isofile=\"/iso/${IMAGE}\"
   set isouuid=\"/dev/disk/by-uuid/${UUID}/iso/${IMAGE}\"
   set bo1=\"boot=live config live-media=removable nopersistent noprompt quiet\"
@@ -283,6 +282,9 @@ echo "menuentry \"Tails 0.23 i386 masquerade\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
+    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    shift 1
+  done
 }
 
 function install_ubuntu12s_amd64()
@@ -346,8 +348,7 @@ install_gentoo_i386
 install_kali 1.0.6 amd64
 install_netbsd 6.1.3 amd64 i386
 install_openbsd 5.4 amd64 i386
-install_tails_i386
-install_tails_i386_masq
+install_tails 0.23 i386
 install_ubuntu12s_amd64
 install_ubuntu13d_amd64
 install_ubuntu13d_i386
