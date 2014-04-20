@@ -157,8 +157,9 @@ function install_gentoo()
   local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    F_NAME="latest-install-${1}-minimal.txt"
-    VER_L=$(curl -f -s distfiles.gentoo.org/releases/${1}/autobuilds/${F_NAME} \
+    local F_NAME="latest-install-${1}-minimal.txt"
+    local SERVER="http://mirror.mcs.anl.gov/pub/gentoo/releases/"
+    local VER_L=$(curl -f -s ${SERVER}/releases/${1}/autobuilds/${F_NAME} \
       | tail -n 1 | cut -d"/" -f1 )
     local DL_ADDY="distfiles.gentoo.org/releases/${1}/autobuilds/${VER_L}/"
     local IMAGE="install-${1}-minimal-${VER_L}.iso"
