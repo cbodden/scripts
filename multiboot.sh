@@ -303,12 +303,12 @@ echo "menuentry \"Ubuntu ${VER} server ${1}\" {
 
 function install_ubuntud()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
     [[ "$1" == i386 ]] && EFI="" || EFI=".efi"
-    DL_ADDY="http://releases.ubuntu.com/${VER}/"
-    IMAGE="ubuntu-${VER}-desktop-${1}.iso"
+    local DL_ADDY="http://releases.ubuntu.com/${VER}/"
+    local IMAGE="ubuntu-${VER}-desktop-${1}.iso"
 
 echo "menuentry \"Ubuntu ${VER} desktop ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
