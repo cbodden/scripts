@@ -91,13 +91,6 @@ function grub_disk()
   mkdir ${USBTMPDIR}/iso/
 }
 
-function cleanup()
-{
-  sync
-  umount ${USBSTICK}1
-  rm ${USBTMPDIR} -rf
-}
-
 function grub_header()
 {
 echo "set timeout=300
@@ -105,6 +98,13 @@ set default=0
 set menu_color_normal=white/black
 set menu_color_highlight=white/green
 " >> ${GRUBCONF}
+}
+
+function cleanup()
+{
+  sync
+  umount ${USBSTICK}1
+  rm ${USBTMPDIR} -rf
 }
 
 function install_debian_amd64()
