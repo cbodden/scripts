@@ -109,9 +109,9 @@ set menu_color_highlight=white/green
 
 function install_debian_amd64()
 {
-  VER="7.4.0"
-  DL_ADDY="http://cdimage.debian.org/debian-cd/${VER}/amd64/iso-cd/"
-  IMAGE="debian-${VER}-amd64-netinst.iso"
+  local VER="7.4.0"
+  local DL_ADDY="http://cdimage.debian.org/debian-cd/${VER}/amd64/iso-cd/"
+  local IMAGE="debian-${VER}-amd64-netinst.iso"
 
 echo "menuentry \"Debian netinst ${VER} amd64\" {
   set isofile=\"/iso/${IMAGE}\"
@@ -126,14 +126,14 @@ echo "menuentry \"Debian netinst ${VER} amd64\" {
 
 function install_fedora()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    [[ "$1" == i386 ]] && { VER_3="i386" ; VER_6="i686" ; } ||
-      { VER_3=$(echo ${1}) ; VER_6=$(echo ${1}) ; }
-    DL_ADDY="mirror.pnl.gov/fedora/linux/releases/${VER}/Live/${VER_3}/"
-    IMAGE="Fedora-Live-Desktop-${VER_6}-${VER}-1.iso"
-    FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
+    [[ "$1" == i386 ]] && { local VER_3="i386" ; local VER_6="i686" ; } ||
+      { local VER_3=$(echo ${1}) ; local VER_6=$(echo ${1}) ; }
+    local DL_ADDY="mirror.pnl.gov/fedora/linux/releases/${VER}/Live/${VER_3}/"
+    local IMAGE="Fedora-Live-Desktop-${VER_6}-${VER}-1.iso"
+    local FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
 
 echo "menuentry \"Fedora desktop ${VER} ${VER_3}\" ${FED_OPTS} {
   insmod loopback
@@ -154,14 +154,14 @@ echo "menuentry \"Fedora desktop ${VER} ${VER_3}\" ${FED_OPTS} {
 
 function install_gentoo()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
     F_NAME="latest-install-${1}-minimal.txt"
     VER_L=$(curl -f -s distfiles.gentoo.org/releases/${1}/autobuilds/${F_NAME} \
       | tail -n 1 | cut -d"/" -f1 )
-    DL_ADDY="http://distfiles.gentoo.org/releases/${1}/autobuilds/${VER_L}/"
-    IMAGE="install-${1}-minimal-${VER_L}.iso"
+    local DL_ADDY="distfiles.gentoo.org/releases/${1}/autobuilds/${VER_L}/"
+    local IMAGE="install-${1}-minimal-${VER_L}.iso"
 
 echo "menuentry \"Gentoo minimal ${VER_L} ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
@@ -180,11 +180,11 @@ echo "menuentry \"Gentoo minimal ${VER_L} ${1}\" {
 
 function install_kali()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    DL_ADDY="http://cdimage.kali.org/kali-latest/${1}/"
-    IMAGE="kali-linux-${VER}-${1}.iso"
+    local DL_ADDY="http://cdimage.kali.org/kali-latest/${1}/"
+    local IMAGE="kali-linux-${VER}-${1}.iso"
 
 echo "menuentry \"Kali Linux ${VER} ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
@@ -203,15 +203,15 @@ echo "menuentry \"Kali Linux ${VER} ${1}\" {
 
 function install_netbsd()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    DL_ADDY="mirror.planetunix.net/pub/NetBSD/NetBSD-${VER}/${1}/"
-    KNL_DL="binary/kernel/netbsd-INSTALL.gz"
-    KNL="netbsd-INSTALL.gz"
-    ST="binary/sets/"
-    WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
-    WGET_PATH="--directory-prefix=${USBTMPDIR}/iso/netbsd/${VER}/${1}/"
+    local DL_ADDY="mirror.planetunix.net/pub/NetBSD/NetBSD-${VER}/${1}/"
+    local KNL_DL="binary/kernel/netbsd-INSTALL.gz"
+    local KNL="netbsd-INSTALL.gz"
+    local ST="binary/sets/"
+    local WGET_OPT="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
+    local WGET_PATH="--directory-prefix=${USBTMPDIR}/iso/netbsd/${VER}/${1}/"
 
 echo "menuentry \"NetBSD ${VER} ${1}\" {
   insmod ext2
@@ -219,7 +219,7 @@ echo "menuentry \"NetBSD ${VER} ${1}\" {
   knetbsd /iso/netbsd/${VER}/${1}/${KNL}
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${ST} ${WGET_OPTIONS} ${WGET_PATH} || echo "NetBSD dloaded"
+    wget ${DL_ADDY}${ST} ${WGET_OPT} ${WGET_PATH} || echo "NetBSD dloaded"
     wget ${DL_ADDY}${KNL_DL} ${WGET_PATH} || echo "NetBSD kernel dloaded"
     shift 1
   done
@@ -227,12 +227,12 @@ echo "menuentry \"NetBSD ${VER} ${1}\" {
 
 function install_openbsd()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    DL_ADDY="http://openbsd.mirrors.hoobly.com/${VER}/${1}/"
-    WGET_OPTIONS="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
-    WGET_PATH="--directory-prefix=${USBTMPDIR}/${VER}/${1}/"
+    local DL_ADDY="http://openbsd.mirrors.hoobly.com/${VER}/${1}/"
+    local WGET_OPT="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
+    local WGET_PATH="--directory-prefix=${USBTMPDIR}/${VER}/${1}/"
 
 echo "menuentry \"OpenBSD ${VER} ${1}\" {
   insmod ext2
@@ -240,18 +240,18 @@ echo "menuentry \"OpenBSD ${VER} ${1}\" {
   kopenbsd /${VER}/${1}/bsd.rd
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY} ${WGET_OPTIONS} ${WGET_PATH} || echo "OpenBSD dloaded"
+    wget ${DL_ADDY} ${WGET_OPT} ${WGET_PATH} || echo "OpenBSD dloaded"
     shift 1
   done
 }
 
 function install_tails()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    DL_ADDY="http://dl.amnesia.boum.org/tails/stable/tails-${1}-${VER}/"
-    IMAGE="tails-${1}-${VER}.iso"
+    local DL_ADDY="http://dl.amnesia.boum.org/tails/stable/tails-${1}-${VER}/"
+    local IMAGE="tails-${1}-${VER}.iso"
 
 echo "menuentry \"Tails ${VER} ${1} default\" {
   set isofile=\"/iso/${IMAGE}\"
@@ -281,12 +281,12 @@ echo "menuentry \"Tails ${VER} ${1} masquerade\" {
 
 function install_ubuntus()
 {
-  VER=$1
+  local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
     [[ "$1" == i386 ]] && EFI="" || EFI=".efi"
-    DL_ADDY="http://releases.ubuntu.com/${VER}/"
-    IMAGE="ubuntu-${VER}-server-${1}.iso"
+    local DL_ADDY="http://releases.ubuntu.com/${VER}/"
+    local IMAGE="ubuntu-${VER}-server-${1}.iso"
 
 echo "menuentry \"Ubuntu ${VER} server ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
