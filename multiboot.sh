@@ -211,7 +211,7 @@ function install_netbsd()
     local KNL_DL="binary/kernel/netbsd-INSTALL.gz"
     local KNL="netbsd-INSTALL.gz"
     local ST="binary/sets/"
-    local WGET_OPT="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
+    local WGET_OPT="-r -l 1 -nd -e robots=off -R '*.html*,*.gif'"
     local WGET_PATH="--directory-prefix=${USBTMPDIR}/iso/netbsd/${VER}/${1}/"
 
 echo "menuentry \"NetBSD ${VER} ${1}\" {
@@ -231,8 +231,8 @@ function install_openbsd()
   local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    local DL_ADDY="http://openbsd.mirrors.hoobly.com/${VER}/${1}/"
-    local WGET_OPT="-r -l 1 -nd -e robots=off --reject *.html* --reject *.gif"
+    local DL_ADDY="openbsd.mirrors.hoobly.com/${VER}/${1}/"
+    local WGET_OPT="-r -l 1 -nd -e robots=off -R '*.html*,*.gif'"
     local WGET_PATH="--directory-prefix=${USBTMPDIR}/${VER}/${1}/"
 
 echo "menuentry \"OpenBSD ${VER} ${1}\" {
