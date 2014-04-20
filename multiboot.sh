@@ -80,7 +80,7 @@ EOF
   mkfs.vfat ${USBSTICK}1
 }
 
-function disk_grub2()
+function grub_disk_install()
 {
   mkdir ${USBTMPDIR}
   mount ${USBSTICK}1 ${USBTMPDIR}
@@ -98,7 +98,7 @@ function cleanup()
   rm ${USBTMPDIR} -rf
 }
 
-function install_grub_header()
+function grub_header_install()
 {
 echo "set timeout=300
 set default=0
@@ -328,8 +328,8 @@ echo "menuentry \"Ubuntu ${VER} desktop ${1}\" {
 
 disk_detect
 disk_action
-disk_grub2
-install_grub_header
+grub_disk_install
+grub_header_install
 install_debian_amd64
 install_fedora 20 x86_64 i386
 install_gentoo current amd64 x86
