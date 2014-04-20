@@ -29,6 +29,9 @@ trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 R_UID="0"
 [[ "${UID}" -ne "${R_UID}" ]] && { printf "\nNeeds sudo\n" ; exit 1 ; }
 
+ORN=$(tput setaf 3); RED=$(tput setaf 1)
+BLU=$(tput setaf 4); GRN=$(tput setaf 40); CLR=$(tput sgr0)
+
 USBTMPDIR="/usbtmpdir"
 GRUBCONF="${USBTMPDIR}/boot/grub/grub.cfg"
 
