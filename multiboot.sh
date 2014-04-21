@@ -113,8 +113,8 @@ function gather_info()
   MNHDR="${BLU}[*]${CLR} "
   BDHDR="${RED}[*]${CLR}"
   COLHDR="${GRN}[*]${CLR} "
-  printf "${FMT}" "${MNHDR}" "Lets select which OS's to install" "."
-  read REQS
+  printf "${FMT}" "${MNHDR}" "message" ": "
+  read READ
 }
 
 function install_debian()
