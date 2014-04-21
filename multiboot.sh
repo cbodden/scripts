@@ -15,7 +15,7 @@
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 15 April 2014
-#      REVISION: 10
+#      REVISION: 11
 #===============================================================================
 
 LANG=C
@@ -86,8 +86,8 @@ function grub_disk()
   mount ${USBSTICK}1 ${USBTMPDIR}
   UUID=`ls -al /dev/disk/by-uuid/ | grep ${DRV_CLEAN}1 | awk '{print $9}'`
   [[ -n $(which grub2-install 2>/dev/null) ]] &&
-    { grub2-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK} ; } ||
-    { grub-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK} ; }
+    { grub2-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK}; } ||
+    { grub-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK}; }
   mkdir ${USBTMPDIR}/iso/
 }
 
@@ -133,7 +133,7 @@ echo "menuentry \"Debian netinst ${VER} ${1}\" {
   initrd (loop)/install.amd/initrd.gz
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
@@ -143,8 +143,8 @@ function install_fedora()
   local VER=$1
   shift 1
   while [[ $# -gt 0 ]]; do
-    [[ "$1" == i386 ]] && { local VER_3="i386" ; local VER_6="i686" ; } ||
-      { local VER_3=$(echo ${1}) ; local VER_6=$(echo ${1}) ; }
+    [[ "$1" == i386 ]] && { local VER_3="i386"; local VER_6="i686"; } ||
+      { local VER_3=$(echo ${1}); local VER_6=$(echo ${1}); }
     local DL_ADDY="mirror.pnl.gov/fedora/linux/releases/${VER}/Live/${VER_3}/"
     local IMAGE="Fedora-Live-Desktop-${VER_6}-${VER}-1.iso"
     local FED_OPTS="--class fedora --class gnu-linux --class gnu --class os"
@@ -161,7 +161,7 @@ echo "menuentry \"Fedora desktop ${VER} ${VER_3}\" ${FED_OPTS} {
   initrd /isolinux/initrd0.img
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
@@ -188,7 +188,7 @@ echo "menuentry \"Gentoo minimal ${VER_L} ${1}\" {
   initrd (loop)/isolinux/gentoo.igz
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
@@ -211,7 +211,7 @@ echo "menuentry \"Kali Linux ${VER} ${1}\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
@@ -289,7 +289,7 @@ echo "menuentry \"Tails ${VER} ${1} masquerade\" {
   initrd (loop)/live/initrd.img
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
@@ -311,7 +311,7 @@ echo "menuentry \"Ubuntu ${VER} server ${1}\" {
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
@@ -333,7 +333,7 @@ echo "menuentry \"Ubuntu ${VER} desktop ${1}\" {
   initrd (loop)/casper/initrd.lz
 }
 " >> ${GRUBCONF}
-    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE} --directory-prefix=${USBTMPDIR}/iso/
     shift 1
   done
 }
