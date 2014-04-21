@@ -22,6 +22,7 @@ LANG=C
 set -e
 set -o pipefail
 set -o nounset
+set -o errexit
 NAME=$(basename $0)
 trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
@@ -29,11 +30,12 @@ trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 R_UID="0"
 [[ "${UID}" -ne "${R_UID}" ]] && { printf "\nNeeds sudo\n"; exit 1; }
 
-ORN=$(tput setaf 3); RED=$(tput setaf 1)
-BLU=$(tput setaf 4); GRN=$(tput setaf 40); CLR=$(tput sgr0)
+readonly ORN=$(tput setaf 3); readonly RED=$(tput setaf 1)
+readonly BLU=$(tput setaf 4); readonly GRN=$(tput setaf 40)
+readonly CLR=$(tput sgr0)
 
-USBTMPDIR="/usbtmpdir"
-GRUBCONF="${USBTMPDIR}/boot/grub/grub.cfg"
+readonly USBTMPDIR="/usbtmpdir"
+readonly GRUBCONF="${USBTMPDIR}/boot/grub/grub.cfg"
 
 function disk_detect()
 {
@@ -47,9 +49,9 @@ function disk_detect()
     case "${DRV}" in
       ${DRV}) [[ -n $(df | grep "${DRV}") ]] &&
         { echo -e "${DRV} is used by:\n$(df | grep "${DRV}")"; exit 1; } ||
-        { USBSTICK="${DRV}"; } ;;
+        { readonly USBSTICK="${DRV}"; } ;;
     esac
-    DRV_CLEAN=$(echo "${USBSTICK}" | cut -d"/" -f3)
+    readonly DRV_CLEAN=$(echo "${USBSTICK}" | cut -d"/" -f3)
     break
   done
 }
