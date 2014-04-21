@@ -15,7 +15,7 @@
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 15 April 2014
-#      REVISION: 11
+#      REVISION: 12
 #===============================================================================
 
 LANG=C
@@ -27,12 +27,12 @@ NAME=$(basename $0)
 trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 # check for sudo / root
-R_UID="0"
+readonly R_UID="0"
 [[ "${UID}" -ne "${R_UID}" ]] && { printf "\nNeeds sudo\n"; exit 1; }
 
-readonly ORN=$(tput setaf 3); readonly RED=$(tput setaf 1)
-readonly BLU=$(tput setaf 4); readonly GRN=$(tput setaf 40)
-readonly CLR=$(tput sgr0)
+ORN=$(tput setaf 3); RED=$(tput setaf 1)
+BLU=$(tput setaf 4); GRN=$(tput setaf 40)
+CLR=$(tput sgr0)
 
 readonly USBTMPDIR="/usbtmpdir"
 readonly GRUBCONF="${USBTMPDIR}/boot/grub/grub.cfg"
@@ -86,7 +86,8 @@ function grub_disk()
 {
   mkdir ${USBTMPDIR}
   mount ${USBSTICK}1 ${USBTMPDIR}
-  UUID=`ls -al /dev/disk/by-uuid/ | grep ${DRV_CLEAN}1 | awk '{print $9}'`
+  readonly UUID=$(ls -al /dev/disk/by-uuid/ | \
+    grep ${DRV_CLEAN}1 | awk '{print $9}')
   [[ -n $(which grub2-install 2>/dev/null) ]] &&
     { grub2-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK}; } ||
     { grub-install --no-floppy --root-directory=${USBTMPDIR} ${USBSTICK}; }
