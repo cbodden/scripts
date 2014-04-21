@@ -107,13 +107,25 @@ function cleanup()
   rm ${USBTMPDIR} -rf
 }
 
-function install_debian_amd64()
+function gather_info()
 {
-  local VER="7.4.0"
-  local DL_ADDY="http://cdimage.debian.org/debian-cd/${VER}/amd64/iso-cd/"
-  local IMAGE="debian-${VER}-amd64-netinst.iso"
+  FMT="%s%-44s%s"
+  MNHDR="${BLU}[*]${CLR} "
+  BDHDR="${RED}[*]${CLR}"
+  COLHDR="${GRN}[*]${CLR} "
+  printf "${FMT}" "${MNHDR}" "Lets select which OS's to install" "."
+  read REQS
+}
 
-echo "menuentry \"Debian netinst ${VER} amd64\" {
+function install_debian()
+{
+  local VER=$1
+  shift 1
+  while [[ $# -gt 0 ]]; do
+    local DL_ADDY="cdimage.debian.org/debian-cd/${VER}/${1}/iso-cd/"
+    local IMAGE="debian-${VER}-${1}-netinst.iso"
+
+echo "menuentry \"Debian netinst ${VER} ${1}\" {
   set isofile=\"/iso/${IMAGE}\"
   set bo1=\"vga=normal --\"
   loopback loop \$isofile
@@ -121,7 +133,9 @@ echo "menuentry \"Debian netinst ${VER} amd64\" {
   initrd (loop)/install.amd/initrd.gz
 }
 " >> ${GRUBCONF}
-  wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    wget ${DL_ADDY}${IMAGE}  --directory-prefix=${USBTMPDIR}/iso/
+    shift 1
+  done
 }
 
 function install_fedora()
@@ -330,7 +344,7 @@ disk_detect
 disk_action
 grub_disk
 grub_header
-install_debian_amd64
+install_debian 7.4.0 amd64 i386
 install_fedora 20 x86_64 i386
 install_gentoo current amd64 x86
 install_kali 1.0.6 amd64
