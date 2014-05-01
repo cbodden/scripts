@@ -352,8 +352,8 @@ install_fedora 20 x86_64 i386
 install_gentoo current amd64 x86
 install_kali 1.0.6 amd64
 install_netbsd 6.1.3 amd64 i386
-install_openbsd 5.4 amd64 i386
-install_tails 0.23 i386
+install_openbsd 5.5 amd64 i386
+install_tails 1.0 i386
 install_ubuntus 12.04.4 amd64 i386
 install_ubuntud 13.10 amd64 i386
 cleanup
