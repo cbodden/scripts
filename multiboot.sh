@@ -26,9 +26,8 @@ set -o errexit
 NAME=$(basename $0)
 
 # text format && color for messages
-ORN=$(tput setaf 3); RED=$(tput setaf 1)
-BLU=$(tput setaf 4); GRN=$(tput setaf 40)
-CLR=$(tput sgr0)
+ORN=$(tput setaf 3); RED=$(tput setaf 1); BLU=$(tput setaf 4)
+GRN=$(tput setaf 40); CLR=$(tput sgr0)
 FMT="%s%-44s%s"
 MNHDR="${BLU}[*]${CLR} "; BDHDR="${RED}[*]${CLR}"; COLHDR="${GRN}[*]${CLR} "
 # printf "${FMT}" "${MNHDR}" "message" ": "
