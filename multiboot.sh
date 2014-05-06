@@ -15,7 +15,7 @@
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 15 April 2014
-#      REVISION: 12
+#      REVISION: 13
 #===============================================================================
 
 LANG=C
@@ -24,15 +24,21 @@ set -o pipefail
 set -o nounset
 set -o errexit
 NAME=$(basename $0)
+
+ORN=$(tput setaf 3); RED=$(tput setaf 1)
+BLU=$(tput setaf 4); GRN=$(tput setaf 40)
+CLR=$(tput sgr0)
+
+# OS check && trap statement
+case "$(uname 2>/dev/null)" in
+  'Linux') ;;
+  *) echo "This has only been tested in Linux" ; exit 1 ;;
+esac
 trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 # check for sudo / root
 readonly R_UID="0"
 [[ "${UID}" -ne "${R_UID}" ]] && { printf "\nNeeds sudo\n"; exit 1; }
-
-ORN=$(tput setaf 3); RED=$(tput setaf 1)
-BLU=$(tput setaf 4); GRN=$(tput setaf 40)
-CLR=$(tput sgr0)
 
 readonly USBTMPDIR="/usbtmpdir"
 readonly GRUBCONF="${USBTMPDIR}/boot/grub/grub.cfg"
