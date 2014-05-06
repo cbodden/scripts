@@ -33,10 +33,7 @@ MNHDR="${BLU}[*]${CLR} "; BDHDR="${RED}[*]${CLR}"; COLHDR="${GRN}[*]${CLR} "
 # printf "${FMT}" "${MNHDR}" "message" ": "
 
 # OS check && trap statement
-case "$(uname 2>/dev/null)" in
-  'Linux') ;;
-  *) echo "This has only been tested in Linux" ; exit 1 ;;
-esac
+[[ "$(uname)" != "Linux" ]] && { printf "\nNeeds Linux\n"; exit 1; }
 trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 # check for sudo / root
