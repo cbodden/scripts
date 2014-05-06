@@ -15,7 +15,7 @@
 #        AUTHOR: cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 15 April 2014
-#      REVISION: 13
+#      REVISION: 12
 #===============================================================================
 
 LANG=C
@@ -25,9 +25,13 @@ set -o nounset
 set -o errexit
 NAME=$(basename $0)
 
+# text format && color for messages
 ORN=$(tput setaf 3); RED=$(tput setaf 1)
 BLU=$(tput setaf 4); GRN=$(tput setaf 40)
 CLR=$(tput sgr0)
+FMT="%s%-44s%s"
+MNHDR="${BLU}[*]${CLR} "; BDHDR="${RED}[*]${CLR}"; COLHDR="${GRN}[*]${CLR} "
+# printf "${FMT}" "${MNHDR}" "message" ": "
 
 # OS check && trap statement
 case "$(uname 2>/dev/null)" in
@@ -114,16 +118,6 @@ function cleanup()
   sync
   umount ${USBSTICK}1
   rm ${USBTMPDIR} -rf
-}
-
-function gather_info()
-{
-  FMT="%s%-44s%s"
-  MNHDR="${BLU}[*]${CLR} "
-  BDHDR="${RED}[*]${CLR}"
-  COLHDR="${GRN}[*]${CLR} "
-  printf "${FMT}" "${MNHDR}" "message" ": "
-  read READ
 }
 
 function install_debian()
