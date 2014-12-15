@@ -15,7 +15,7 @@ EOL
 [ $# -lt 1 ] && { usage; exit 1; }
 [ -e ${1} ] || { usage; exit 1; }
 
-declare -a _SUMS=(md5sum shasum sha1sum sha224sum sha256sum sha384sum sha512sum)
+declare -a _SUMS=(md5sum sha1sum sha224sum sha256sum sha384sum sha512sum)
 printf "%12s%0s\n" "FILE: " "$(echo ${1})"
 printf "%12s%0s\n" "SIZE: " "$(ls -alh ${1} | awk '{ print $5 }')"
 for _LIST in "${_SUMS[@]}"; do
