@@ -33,7 +33,6 @@ function check()
     local FM_POST=$(echo $(cat /proc/meminfo \
         | awk '/MemFree/ {awk {print $2}')/1024.0 \
         | ${BC})
-
     printf "%s\n" "memory freed  : $(echo "${FM_POST} - ${FM_PRE}" \
         | ${BC})mb" \
         "total free    : ${FM_POST}mb" ""
