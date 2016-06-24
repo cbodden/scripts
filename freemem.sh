@@ -1,24 +1,46 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-BC=`which bc`
+readonly BC=$(which bc)
 
-if [ -z $BC ]; then
-    printf "\nbc not found.\n"
-    exit 1
-fi
+function main()
+{
+    if [ -z ${BC} ]; then
+        printf "\nbc not found.\n"
+        exit 1
+    fi
+}
 
-fm_pre=`echo \`cat /proc/meminfo | grep MemFree | tr -s ' ' | cut -d ' ' -f2\`/1024.0 | $BC`
-cm_pre=`echo \`cat /proc/meminfo | grep "^Cached" | tr -s ' ' | cut -d ' ' -f2\`/1024.0 | $BC`
-m_tot=`echo \`cat /proc/meminfo | grep MemTotal | tr -s ' ' | cut -d ' ' -f2\`/1024.0 | $BC`
+function precheck()
+{
+    FM_PRE=$(echo $(cat /proc/meminfo \
+        | awk '/MemFree/ {print $2}')/1024.0 \
+        | ${BC})
+    local CM_PRE=$(echo $(cat /proc/meminfo \
+        | awk '/^Cached/ {print $2}')/1024.0 \
+        | ${BC})
+    local M_TOT=$(echo $(cat /proc/meminfo \
+        | awk '/MemTotal/ {print $2}')/1024.0 \
+        | ${BC})
+    printf "%s\n" "" "This script clears cached mem and free's up some ram." \
+        "cached memory : ${CM_PRE}mb" \
+        "free memory   : ${FM_PRE}mb" \
+        "total memory  : ${M_TOT}mb" ""
+}
 
-printf "This script clears cached mem and free's up some ram.\n"
-printf "cached memory : ${cm_pre}mb\n"
-printf "free memory   : ${fm_pre}mb\n"
-printf "total memory  : ${m_tot}mb\n"
+function check()
+{
+    sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
+    local FM_POST=$(echo $(cat /proc/meminfo \
+        | grep MemFree \
+        | tr -s ' ' \
+        | cut -d ' ' -f2)/1024.0 \
+        | ${BC})
 
-sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
+    printf "%s\n" "memory freed  : $(echo "${FM_POST} - ${FM_PRE}" \
+        | ${BC})mb" \
+        "total free    : ${FM_POST}mb" ""
+}
 
-fm_post=`echo \`cat /proc/meminfo | grep MemFree | tr -s ' ' | cut -d ' ' -f2\`/1024.0 | $BC`
-
-printf "\nmemory freed  : `echo "${fm_post} - ${fm_pre}" | $BC`mb\n"
-printf "total free    : ${fm_post}mb\n"
+main
+precheck
+check
