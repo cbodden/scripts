@@ -31,9 +31,7 @@ function check()
 {
     sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
     local FM_POST=$(echo $(cat /proc/meminfo \
-        | grep MemFree \
-        | tr -s ' ' \
-        | cut -d ' ' -f2)/1024.0 \
+        | awk '/MemFree/ {awk {print $2}')/1024.0 \
         | ${BC})
 
     printf "%s\n" "memory freed  : $(echo "${FM_POST} - ${FM_PRE}" \
