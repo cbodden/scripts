@@ -5,7 +5,7 @@ readonly BC=$(which bc)
 function main()
 {
     if [ -z ${BC} ]; then
-        printf "\nbc not found.\n"
+        printf "%s\n" "bc not found."
         exit 1
     fi
 }
@@ -21,7 +21,7 @@ function precheck()
     local M_TOT=$(echo $(cat /proc/meminfo \
         | awk '/MemTotal/ {print $2}')/1024.0 \
         | ${BC})
-    printf "%s\n" "" "This script clears cached mem and free's up some ram." \
+    printf "%s\n" "" "This script clears cached mem and free's up ram." \
         "cached memory : ${CM_PRE}mb" \
         "free memory   : ${FM_PRE}mb" \
         "total memory  : ${M_TOT}mb" ""
