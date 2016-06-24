@@ -12,15 +12,15 @@ function main()
 
 function precheck()
 {
-    FM_PRE=$(echo $(cat /proc/meminfo \
-        | awk '/MemFree/ {print $2}')/1024.0 \
-        | ${BC})
-    local CM_PRE=$(echo $(cat /proc/meminfo \
-        | awk '/^Cached/ {print $2}')/1024.0 \
-        | ${BC})
-    local M_TOT=$(echo $(cat /proc/meminfo \
-        | awk '/MemTotal/ {print $2}')/1024.0 \
-        | ${BC})
+    FM_PRE=$(echo $(\
+        awk '/MemFree/ {print $2}' /proc/meminfo)/1024.0 \
+            | ${BC})
+    local CM_PRE=$(echo $(\
+        awk '/^Cached/ {print $2}' /proc/meminfo)/1024.0 \
+            | ${BC})
+    local M_TOT=$(echo $(\
+        awk '/MemTotal/ {print $2}' /proc/meminfo)/1024.0 \
+            | ${BC})
     printf "%s\n" "" "This script clears cached mem and free's up ram." \
         "cached memory : ${CM_PRE}mb" \
         "free memory   : ${FM_PRE}mb" \
@@ -30,9 +30,9 @@ function precheck()
 function check()
 {
     sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
-    local FM_POST=$(echo $(cat /proc/meminfo \
-        | awk '/MemFree/ {awk {print $2}')/1024.0 \
-        | ${BC})
+    local FM_POST=$(echo $(\
+        awk '/MemFree/ {print $2}' /proc/meminfo)/1024.0 \
+            | ${BC})
     printf "%s\n" "memory freed  : $(echo "${FM_POST} - ${FM_PRE}" \
         | ${BC})mb" \
         "total free    : ${FM_POST}mb" ""
