@@ -40,6 +40,15 @@ function check()
         "total free    : ${FM_POST}mb" ""
 }
 
+function clearswap()
+{
+    # clear swap space
+    sudo swapoff -a
+    sudo swapon -a
+    printf "%s\n" "Swap cleared." ""
+}
+
 main
 precheck
 check
+clearswap
