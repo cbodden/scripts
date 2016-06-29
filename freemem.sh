@@ -29,6 +29,7 @@ function precheck()
 
 function check()
 {
+    # clear pagecache, dentries and inodes
     sudo sh -c "sync; echo 3 > /proc/sys/vm/drop_caches"
     local FM_POST=$(echo $(\
         awk '/MemFree/ {print $2}' /proc/meminfo ) /1024.0 \
