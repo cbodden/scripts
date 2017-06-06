@@ -28,8 +28,7 @@ _WINT=$(ifconfig \
 _IPT="sudo /sbin/iptables"
 _IP6T="sudo /sbin/ip6tables"
 
-# do not accept ssr or lsr
-# disable icmp redirected packets
+# do not accept ssr or lsr && disable icmp redirected packets
 _0_ITER="/proc/sys/net/ipv4/conf/*/accept_source_route
 /proc/sys/net/ipv4/conf/*/accept_redirects"
 
@@ -39,8 +38,7 @@ do
         | sudo tee ${ITER}
 done
 
-# do not reply to broadcast ping
-# do not reply to SYN
+# do not reply to broadcast ping && do not reply to SYN
 _1_ITER="/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 /proc/sys/net/ipv4/conf/*/rp_filter"
 
