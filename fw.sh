@@ -65,16 +65,16 @@ ${_IPT} -t filter -A OUTPUT -p icmp -j ACCEPT
 ${_IPT} -A OUTPUT -p tcp --dport rsync --syn -m state --state NEW -j ACCEPT
 
 # ssh
-${_IPT} -A INPUT -i ${_WINT} -p tcp -m tcp --dport 22 -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 22 -j ACCEPT
+${_IPT} -A INPUT -i ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
+${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
 
 # http, https
-${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 80 -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 80 -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 443 -j ACCEPT
+${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport http -j ACCEPT
+${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport http -j ACCEPT
+${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport https -j ACCEPT
 
 # outgoing ntp
-${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 123 -j ACCEPT
+${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport ntp -j ACCEPT
 
 # dns
 ${_IPT} -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
