@@ -26,12 +26,12 @@ function main()
     [[ "${UID}" -ne "${R_UID}" ]] \
         && { printf "\nNeeds sudo\n\n"; exit 1; }
 
+    # globals
     _WINT=$(ifconfig \
         | grep "^[a-z]" \
         | grep -v "^lo\|^sit\|tun" \
         | awk '{print $1}' \
         | tr -d ":" )
-
     _IPT="/sbin/iptables"
     _IP6T="/sbin/ip6tables"
 }
@@ -40,7 +40,7 @@ function ctl()
 {
     local _CNT=0
 
-    declare -g _SYSCTL=( "net.ipv4.conf.all.accept_source_route = 0"
+    declare -r _SYSCTL=( "net.ipv4.conf.all.accept_source_route = 0"
     "net.ipv4.conf.all.accept_redirects = 0"
     "net.ipv6.conf.all.accept_redirects = 0"
     "net.ipv4.icmp_echo_ignore_broadcasts = 1"
