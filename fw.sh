@@ -61,28 +61,19 @@ ${_IPT} -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 ${_IPT} -t filter -A OUTPUT -p icmp -j ACCEPT
 
 # ssh
-##sudo iptables -A INPUT -i ${_WINT} -p tcp -m tcp --sport 22 -j ACCEPT
 ${_IPT} -A INPUT -i ${_WINT} -p tcp -m tcp --dport 22 -j ACCEPT
-##sudo iptables -A OUTPUT -o ${_WINT} -p tcp -m tcp --sport 22 -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 22 -j ACCEPT
 
 # http, https
 ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 80 -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 80 -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 443 -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 443 -j ACCEPT
 
 # outgoing ntp
 ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 123 -j ACCEPT
 
 # dns
-##sudo iptables -A INPUT -p tcp -m tcp --sport 53 -j ACCEPT
-##sudo iptables -A INPUT -p tcp -m tcp --dport 53 -j ACCEPT
-##sudo iptables -A INPUT -p udp -m udp --sport 53 -j ACCEPT
-##sudo iptables -A INPUT -p udp -m udp --dport 53 -j ACCEPT
-##sudo iptables -A OUTPUT -p tcp -m tcp --sport 53 -j ACCEPT
 ${_IPT} -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
-##sudo iptables -A OUTPUT -p udp -m udp --sport 53 -j ACCEPT
 ${_IPT} -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
 
 # usb armory
