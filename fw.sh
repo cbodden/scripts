@@ -80,20 +80,20 @@ ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 123 -j ACCEPT
 ${_IPT} -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
 ${_IPT} -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
 
+# OpenVPN
+${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport 1194 -j ACCEPT
 
-##### testing begin - connects but does not route #####
-### OpenVPN
-##sudo iptables -A OUTPUT -o ${_WINT} -m udp -p udp --dport 1194 -j ACCEPT
-##
-### Allow TUN interface connections to OpenVPN server
-##sudo iptables -A INPUT -i tun0 -j ACCEPT
-##
-### Allow TUN interface connections to be forwarded through other interfaces
-##sudo iptables -A FORWARD -i tun0 -j ACCEPT
-##sudo iptables -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
-##sudo iptables -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-##### testing end #####
+# Allow TUN interface connections to OpenVPN server
+${_IPT} -A INPUT -i tun0 -j ACCEPT
+${_IPT} -A OUTPUT -o tun0 -j ACCEPT
 
+# Allow TUN interface connections to be forwarded through other interfaces
+${_IPT} -A FORWARD -i tun0 -j ACCEPT
+${_IPT} -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
+${_IPT} -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# NAT the VPN client traffic to the internet
+${_IPT} -t nat -A POSTROUTING -s 10.2.0.0/24 -o ${_WINT} -j MASQUERADE
 
 # "default reject" instead of "default drop" to make troubleshooting easier
 ${_IPT} -A INPUT -j REJECT
@@ -109,9 +109,6 @@ ${_IP6T} -A OUTPUT -j REJECT
 
 # usb armory
 ${_IPT} -t nat -A POSTROUTING -o ${_WINT} -j MASQUERADE
-
-# NAT the VPN client traffic to the internet
-${_IPT} -A OUTPUT -o tun0 -j ACCEPT
 
 sudo /etc/init.d/iptables save
 ${_IPT} -L -v --line-numbers
