@@ -8,7 +8,7 @@
 #   DESCRIPTION: iptables script for portability
 #
 #       OPTIONS: none yet
-#  REQUIREMENTS: iptables, ip6tables, sudo
+#  REQUIREMENTS: iptables, ip6tables
 #          BUGS: most likely
 #         NOTES: this is a huge work in progress
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
@@ -17,99 +17,142 @@
 #      REVISION:  ---
 #===============================================================================
 
-set -o nounset
+function main()
+{
+    set -o nounset
 
-_WINT=$(ifconfig \
-    | grep "^[a-z]" \
-    | grep -v "^lo\|^sit\|tun" \
-    | awk '{print $1}' \
-    | tr -d ":" )
+    # check for sudo / root
+    readonly R_UID="0"
+    [[ "${UID}" -ne "${R_UID}" ]] \
+        && { printf "\nNeeds sudo\n\n"; exit 1; }
 
-_IPT="sudo /sbin/iptables"
-_IP6T="sudo /sbin/ip6tables"
+    _WINT=$(ifconfig \
+        | grep "^[a-z]" \
+        | grep -v "^lo\|^sit\|tun" \
+        | awk '{print $1}' \
+        | tr -d ":" )
 
-# do not accept ssr or lsr && disable icmp redirected packets
-_0_ITER="/proc/sys/net/ipv4/conf/*/accept_source_route
-/proc/sys/net/ipv4/conf/*/accept_redirects"
+    _IPT="/sbin/iptables"
+    _IP6T="/sbin/ip6tables"
+}
 
-for ITER in ${_0_ITER}
-do
-    echo 0 \
-        | sudo tee ${ITER}
-done
+function ctl()
+{
+    local _CNT=0
 
-# do not reply to broadcast ping && do not reply to SYN
-_1_ITER="/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
-/proc/sys/net/ipv4/conf/*/rp_filter"
+    declare -g _SYSCTL=( "net.ipv4.conf.all.accept_source_route = 0"
+    "net.ipv4.conf.all.accept_redirects = 0"
+    "net.ipv6.conf.all.accept_redirects = 0"
+    "net.ipv4.icmp_echo_ignore_broadcasts = 1"
+    "net.ipv4.conf.default.rp_filter = 1"
+    "net.ipv4.conf.all.rp_filter = 1" )
 
-for ITER in ${_1_ITER}
-do
-    echo 1 \
-        | sudo tee ${ITER}
-done
+    for ITER in "${_SYSCTL[@]}"
+    do
+        if grep -Fxq "${ITER}" /etc/sysctl.conf
+        then
+            echo "${ITER} exists in /etc/sysctl.conf"
+        else
+            echo "${ITER}" >> /etc/sysctl.conf
+            let _CNT=_CNT+1
+        fi
+    done
 
-# clear iptables
-${_IPT} -F
+    if [ "${_CNT}" == "${#_SYSCTL[@]}" ] || [ "${_CNT}" -gt "0" ]
+    then
+        # do not accept ssr or lsr && disable icmp redirected packets
+        _0_ITER="/proc/sys/net/ipv4/conf/*/accept_source_route
+        /proc/sys/net/ipv4/conf/*/accept_redirects"
 
-# allow anything on localhost
-${_IPT} -A INPUT  -i lo -j ACCEPT
-${_IPT} -A OUTPUT -o lo -j ACCEPT
+        for ITER in ${_0_ITER}
+        do
+            echo 0 \
+                | tee ${ITER}
+        done
 
-# allow already established
-${_IPT} -A INPUT  -m state --state RELATED,ESTABLISHED -j ACCEPT
-${_IPT} -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+        # do not reply to broadcast ping && do not reply to SYN
+        _1_ITER="/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+        /proc/sys/net/ipv4/conf/*/rp_filter"
 
-# ICMP (Ping)
-${_IPT} -t filter -A OUTPUT -p icmp -j ACCEPT
+        for ITER in ${_1_ITER}
+        do
+            echo 1 \
+                | tee ${ITER}
+        done
+    fi
 
-# rsync (for eix)
-${_IPT} -A OUTPUT -p tcp --dport rsync --syn -m state --state NEW -j ACCEPT
+}
 
-# ssh
-${_IPT} -A INPUT  -i ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
+function ipt()
+{
+    # clear iptables
+    ${_IPT} -F
 
-# http, https
-${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport http -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport http -j ACCEPT
-${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport https -j ACCEPT
+    # allow anything on localhost
+    ${_IPT} -A INPUT  -i lo -j ACCEPT
+    ${_IPT} -A OUTPUT -o lo -j ACCEPT
 
-# outgoing ntp
-${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport ntp -j ACCEPT
+    # allow already established
+    ${_IPT} -A INPUT  -m state --state RELATED,ESTABLISHED -j ACCEPT
+    ${_IPT} -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# dns
-${_IPT} -A OUTPUT -p tcp -m tcp --dport domain -j ACCEPT
-${_IPT} -A OUTPUT -p udp -m udp --dport domain -j ACCEPT
+    # ICMP (Ping)
+    ${_IPT} -t filter -A OUTPUT -p icmp -j ACCEPT
 
-# OpenVPN
-${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport openvpn -j ACCEPT
+    # rsync (for eix)
+    ${_IPT} -A OUTPUT -p tcp --dport rsync --syn -m state --state NEW -j ACCEPT
 
-# Allow TUN interface connections to OpenVPN server
-${_IPT} -A INPUT  -i tun0 -j ACCEPT
-${_IPT} -A OUTPUT -o tun0 -j ACCEPT
+    # ssh
+    ${_IPT} -A INPUT  -i ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
+    ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
 
-# Allow TUN interface connections to be forwarded through other interfaces
-${_IPT} -A FORWARD -i tun0 -j ACCEPT
-${_IPT} -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
-${_IPT} -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    # http, https
+    ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport http -j ACCEPT
+    ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport http -j ACCEPT
+    ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport https -j ACCEPT
 
-# NAT the VPN client traffic to the internet
-${_IPT} -t nat -A POSTROUTING -s 10.2.0.0/24 -o ${_WINT} -j MASQUERADE
+    # outgoing ntp
+    ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport ntp -j ACCEPT
 
-# "default reject" instead of "default drop" to make troubleshooting easier
-${_IPT} -A INPUT  -j REJECT
-${_IPT} -A OUTPUT -j REJECT
+    # dns
+    ${_IPT} -A OUTPUT -p tcp -m tcp --dport domain -j ACCEPT
+    ${_IPT} -A OUTPUT -p udp -m udp --dport domain -j ACCEPT
 
-# my laptop has no business forwarding packets
-${_IPT} -A FORWARD -j REJECT
+    # OpenVPN
+    ${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport openvpn -j ACCEPT
 
-# I don't use ipv6 and it's buggy and exploitable
-${_IP6T} -A FORWARD -j REJECT
-${_IP6T} -A INPUT   -j REJECT
-${_IP6T} -A OUTPUT  -j REJECT
+    # Allow TUN interface connections to OpenVPN server
+    ${_IPT} -A INPUT  -i tun0 -j ACCEPT
+    ${_IPT} -A OUTPUT -o tun0 -j ACCEPT
 
-# usb armory
-${_IPT} -t nat -A POSTROUTING -o ${_WINT} -j MASQUERADE
+    # Allow TUN interface connections to be forwarded through other interfaces
+    ${_IPT} -A FORWARD -i tun0 -j ACCEPT
+    ${_IPT} -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
+    ${_IPT} -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-sudo /etc/init.d/iptables save
-${_IPT} -L -v --line-numbers
+    # NAT the VPN client traffic to the internet
+    ${_IPT} -t nat -A POSTROUTING -s 10.2.0.0/24 -o ${_WINT} -j MASQUERADE
+
+    # "default reject" instead of "default drop" to make troubleshooting easier
+    ${_IPT} -A INPUT  -j REJECT
+    ${_IPT} -A OUTPUT -j REJECT
+
+    # my laptop has no business forwarding packets
+    ${_IPT} -A FORWARD -j REJECT
+
+    # I don't use ipv6 and it's buggy and exploitable
+    ${_IP6T} -A FORWARD -j REJECT
+    ${_IP6T} -A INPUT   -j REJECT
+    ${_IP6T} -A OUTPUT  -j REJECT
+
+    # usb armory
+    ${_IPT} -t nat -A POSTROUTING -o ${_WINT} -j MASQUERADE
+
+    /etc/init.d/iptables save
+    ${_IPT} -L -v --line-numbers
+}
+
+
+main
+ctl
+ipt
