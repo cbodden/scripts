@@ -19,7 +19,12 @@
 
 set -o nounset
 
-_WINT=wlp3s0
+_WINT=$(ifconfig \
+    | grep "^[a-z]" \
+    | grep -v "^lo\|^sit\|tun" \
+    | awk '{print $1}' \
+    | tr -d ":" )
+
 _IPT="sudo /sbin/iptables"
 _IP6T="sudo /sbin/ip6tables"
 
