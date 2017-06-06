@@ -25,22 +25,22 @@ _IPT="sudo /sbin/iptables"
 echo 1 \
     | sudo tee /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 
-for iter in /proc/sys/net/ipv4/conf/*/accept_source_route
+for ITER in /proc/sys/net/ipv4/conf/*/accept_source_route
 do
     echo 0 \
-        | sudo tee $iter
+        | sudo tee ${ITER}
 done
 
-for iter in /proc/sys/net/ipv4/conf/*/accept_redirects
+for ITER in /proc/sys/net/ipv4/conf/*/accept_redirects
 do
     echo 0 \
-        | sudo tee $iter
+        | sudo tee ${ITER}
 done
 
-for iter in /proc/sys/net/ipv4/conf/*/rp_filter
+for ITER in /proc/sys/net/ipv4/conf/*/rp_filter
 do
     echo 1 \
-        | sudo tee $iter
+        | sudo tee ${ITER}
 done
 
 echo 1 \
