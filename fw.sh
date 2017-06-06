@@ -80,7 +80,6 @@ function ctl()
                 | tee ${ITER}
         done
     fi
-
 }
 
 function ipt()
