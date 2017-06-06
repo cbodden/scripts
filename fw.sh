@@ -56,11 +56,11 @@ echo 1 \
 ${_IPT} -F
 
 # allow anything on localhost
-${_IPT} -A INPUT -i lo -j ACCEPT
+${_IPT} -A INPUT  -i lo -j ACCEPT
 ${_IPT} -A OUTPUT -o lo -j ACCEPT
 
 # allow already established
-${_IPT} -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+${_IPT} -A INPUT  -m state --state RELATED,ESTABLISHED -j ACCEPT
 ${_IPT} -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 # ICMP (Ping)
@@ -70,7 +70,7 @@ ${_IPT} -t filter -A OUTPUT -p icmp -j ACCEPT
 ${_IPT} -A OUTPUT -p tcp --dport rsync --syn -m state --state NEW -j ACCEPT
 
 # ssh
-${_IPT} -A INPUT -i ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
+${_IPT} -A INPUT  -i ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport ssh -j ACCEPT
 
 # http, https
@@ -89,7 +89,7 @@ ${_IPT} -A OUTPUT -p udp -m udp --dport domain -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport openvpn -j ACCEPT
 
 # Allow TUN interface connections to OpenVPN server
-${_IPT} -A INPUT -i tun0 -j ACCEPT
+${_IPT} -A INPUT  -i tun0 -j ACCEPT
 ${_IPT} -A OUTPUT -o tun0 -j ACCEPT
 
 # Allow TUN interface connections to be forwarded through other interfaces
@@ -101,7 +101,7 @@ ${_IPT} -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j A
 ${_IPT} -t nat -A POSTROUTING -s 10.2.0.0/24 -o ${_WINT} -j MASQUERADE
 
 # "default reject" instead of "default drop" to make troubleshooting easier
-${_IPT} -A INPUT -j REJECT
+${_IPT} -A INPUT  -j REJECT
 ${_IPT} -A OUTPUT -j REJECT
 
 # my laptop has no business forwarding packets
@@ -109,8 +109,8 @@ ${_IPT} -A FORWARD -j REJECT
 
 # I don't use ipv6 and it's buggy and exploitable
 ${_IP6T} -A FORWARD -j REJECT
-${_IP6T} -A INPUT -j REJECT
-${_IP6T} -A OUTPUT -j REJECT
+${_IP6T} -A INPUT   -j REJECT
+${_IP6T} -A OUTPUT  -j REJECT
 
 # usb armory
 ${_IPT} -t nat -A POSTROUTING -o ${_WINT} -j MASQUERADE
