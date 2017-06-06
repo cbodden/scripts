@@ -21,6 +21,7 @@ set -o nounset
 
 _WINT=wlp3s0
 _IPT="sudo /sbin/iptables"
+_IP6T="sudo /sbin/ip6tables"
 
 echo 1 \
     | sudo tee /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
@@ -76,8 +77,18 @@ ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 123 -j ACCEPT
 ${_IPT} -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
 ${_IPT} -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
 
-# usb armory
-${_IPT} -t nat -A POSTROUTING -o ${_WINT} -j MASQUERADE
+##### testing begin - connects but does not route #####
+# OpenVPN
+sudo iptables -A OUTPUT -o ${_WINT} -m udp -p udp --dport 1194 -j ACCEPT
+
+# Allow TUN interface connections to OpenVPN server
+sudo iptables -A INPUT -i tun0 -j ACCEPT
+
+# Allow TUN interface connections to be forwarded through other interfaces
+sudo iptables -A FORWARD -i tun0 -j ACCEPT
+sudo iptables -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+##### testing end #####
 
 # "default reject" instead of "default drop" to make troubleshooting easier
 ${_IPT} -A INPUT -j REJECT
@@ -87,9 +98,15 @@ ${_IPT} -A OUTPUT -j REJECT
 ${_IPT} -A FORWARD -j REJECT
 
 # I don't use ipv6 and it's buggy and exploitable
-sudo ip6tables -A FORWARD -j REJECT
-sudo ip6tables -A INPUT -j REJECT
-sudo ip6tables -A OUTPUT -j REJECT
+${_IP6T} -A FORWARD -j REJECT
+${_IP6T} -A INPUT -j REJECT
+${_IP6T} -A OUTPUT -j REJECT
+
+# usb armory
+${_IPT} -t nat -A POSTROUTING -o ${_WINT} -j MASQUERADE
+
+# NAT the VPN client traffic to the internet
+${_IPT} -A OUTPUT -o tun0 -j ACCEPT
 
 sudo /etc/init.d/iptables save
 ${_IPT} -L -v --line-numbers
