@@ -61,7 +61,7 @@ function ctl()
     if [ "${_CNT}" == "${#_SYSCTL[@]}" ] || [ "${_CNT}" -gt "0" ]
     then
         # do not accept ssr or lsr && disable icmp redirected packets
-        _0_ITER="/proc/sys/net/ipv4/conf/*/accept_source_route
+        local _0_ITER="/proc/sys/net/ipv4/conf/*/accept_source_route
         /proc/sys/net/ipv4/conf/*/accept_redirects"
 
         for ITER in ${_0_ITER}
@@ -71,7 +71,7 @@ function ctl()
         done
 
         # do not reply to broadcast ping && do not reply to SYN
-        _1_ITER="/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+        local _1_ITER="/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
         /proc/sys/net/ipv4/conf/*/rp_filter"
 
         for ITER in ${_1_ITER}
