@@ -23,27 +23,32 @@ _WINT=wlp3s0
 _IPT="sudo /sbin/iptables"
 _IP6T="sudo /sbin/ip6tables"
 
+# do not reply to broadcast ping
 echo 1 \
     | sudo tee /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 
+# do not accept ssr or lsr
 for ITER in /proc/sys/net/ipv4/conf/*/accept_source_route
 do
     echo 0 \
         | sudo tee ${ITER}
 done
 
+# disable icmp redirected packets
 for ITER in /proc/sys/net/ipv4/conf/*/accept_redirects
 do
     echo 0 \
         | sudo tee ${ITER}
 done
 
+# disable routing packets through interface
 for ITER in /proc/sys/net/ipv4/conf/*/rp_filter
 do
     echo 1 \
         | sudo tee ${ITER}
 done
 
+# dont reply to SYN
 echo 1 \
     | sudo tee /proc/sys/net/ipv4/tcp_syncookies
 
