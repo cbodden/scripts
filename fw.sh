@@ -82,11 +82,11 @@ ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport https -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport ntp -j ACCEPT
 
 # dns
-${_IPT} -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
-${_IPT} -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
+${_IPT} -A OUTPUT -p tcp -m tcp --dport domain -j ACCEPT
+${_IPT} -A OUTPUT -p udp -m udp --dport domain -j ACCEPT
 
 # OpenVPN
-${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport 1194 -j ACCEPT
+${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport openvpn -j ACCEPT
 
 # Allow TUN interface connections to OpenVPN server
 ${_IPT} -A INPUT -i tun0 -j ACCEPT
