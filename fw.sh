@@ -61,6 +61,9 @@ ${_IPT} -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 # ICMP (Ping)
 ${_IPT} -t filter -A OUTPUT -p icmp -j ACCEPT
 
+# rsync (for eix)
+${_IPT} -A OUTPUT -p tcp --dport rsync --syn -m state --state NEW -j ACCEPT
+
 # ssh
 ${_IPT} -A INPUT -i ${_WINT} -p tcp -m tcp --dport 22 -j ACCEPT
 ${_IPT} -A OUTPUT -o ${_WINT} -p tcp -m tcp --dport 22 -j ACCEPT
@@ -77,18 +80,20 @@ ${_IPT} -A OUTPUT -o ${_WINT} -p udp -m udp --dport 123 -j ACCEPT
 ${_IPT} -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
 ${_IPT} -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
 
+
 ##### testing begin - connects but does not route #####
-# OpenVPN
-sudo iptables -A OUTPUT -o ${_WINT} -m udp -p udp --dport 1194 -j ACCEPT
-
-# Allow TUN interface connections to OpenVPN server
-sudo iptables -A INPUT -i tun0 -j ACCEPT
-
-# Allow TUN interface connections to be forwarded through other interfaces
-sudo iptables -A FORWARD -i tun0 -j ACCEPT
-sudo iptables -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+### OpenVPN
+##sudo iptables -A OUTPUT -o ${_WINT} -m udp -p udp --dport 1194 -j ACCEPT
+##
+### Allow TUN interface connections to OpenVPN server
+##sudo iptables -A INPUT -i tun0 -j ACCEPT
+##
+### Allow TUN interface connections to be forwarded through other interfaces
+##sudo iptables -A FORWARD -i tun0 -j ACCEPT
+##sudo iptables -A FORWARD -i tun0 -o ${_WINT} -m state --state RELATED,ESTABLISHED -j ACCEPT
+##sudo iptables -A FORWARD -i ${_WINT} -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 ##### testing end #####
+
 
 # "default reject" instead of "default drop" to make troubleshooting easier
 ${_IPT} -A INPUT -j REJECT
