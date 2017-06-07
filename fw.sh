@@ -51,9 +51,10 @@ function ctl()
     do
         if grep -Fxq "${ITER}" /etc/sysctl.conf
         then
-            echo "${ITER} exists in /etc/sysctl.conf"
+            echo > /dev/null
         else
             echo "${ITER}" >> /etc/sysctl.conf
+            echo "added to /etc/sysctl.conf : ${ITER}"
             let _CNT=_CNT+1
         fi
     done
