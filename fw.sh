@@ -117,6 +117,9 @@ function ipt()
     ${_IPT} -A OUTPUT -p tcp -m tcp --dport domain -j ACCEPT
     ${_IPT} -A OUTPUT -p udp -m udp --dport domain -j ACCEPT
 
+    # plex
+    ${_IPT} -A OUTPUT -p tcp -m tcp --dport 32400 -j ACCEPT
+
     # OpenVPN
     ${_IPT} -A OUTPUT -o ${_WINT} -m udp -p udp --dport openvpn -j ACCEPT
 
