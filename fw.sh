@@ -19,25 +19,75 @@
 
 function main()
 {
-    set -o nounset
+    set -euo pipefail
+    IFS=$'\n\t'
 
-    # check for sudo / root
+    ## check for sudo / root
     readonly R_UID="0"
     [[ "${UID}" -ne "${R_UID}" ]] \
         && { printf "\nNeeds sudo\n\n"; exit 1; }
 
-    # globals
-    _WINT=$(ifconfig \
-        | grep "^[a-z]" \
-        | grep -v "^lo\|^sit\|tun" \
-        | awk '{print $1}' \
-        | tr -d ":" )
     _IPT="/sbin/iptables"
     _IP6T="/sbin/ip6tables"
 }
 
+function pause()
+{
+    ## this does exactly what you think
+    read -p "$*"
+}
+
+function ifc()
+{
+    ## this function lets you choose iface if there are more than one
+    ## found that out the hard way
+
+    declare -r _WINT_AR=($(\
+        ifconfig \
+        | grep "^[a-z]\|UP" \
+        | grep -v "^lo\|^sit\|^tun" \
+        | awk '{print $1}' \
+        | tr -d ":"))
+
+    local _CNT=0
+
+    ## listing iface options
+    if [[ "${#_WINT_AR[@]}" -gt 1 ]]
+    then
+        for ITER in "${_WINT_AR[@]}"
+        do
+            echo "[${_CNT}] ${_WINT_AR[$_CNT]}"
+            _CNT=$((_CNT+1))
+        done
+
+        # selection
+        printf "%s\n" "" \
+            "Choose the network interface by number : "
+        read -a _WINT_SEL
+
+        printf "%s\n" "You selected:"
+        for ITER in "${_WINT_SEL[@]}"
+        do
+            if [[ "${ITER}" -le "${#_WINT_AR[@]}" ]]
+            then
+                printf "%s\n" "${_WINT_AR[$ITER]}"
+                _WINT=${_WINT_AR[$ITER]}
+            else
+                printf "%s\n" "Invalid choice" ""
+                exit 1
+            fi
+        done
+
+        pause "Press [enter] to continue. "
+    else
+        declare -g _WINT="${_WINT_AR[$_CNT]}"
+    fi
+}
+
 function ctl()
 {
+    ## this function sets sysctl.conf
+
     local _CNT=0
 
     declare -r _SYSCTL=( "net.ipv4.conf.all.accept_source_route = 0"
@@ -155,7 +205,8 @@ function ipt()
     ${_IPT} -L -v --line-numbers
 }
 
-
+clear
 main
+ifc
 ctl
 ipt
