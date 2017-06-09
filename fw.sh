@@ -65,12 +65,12 @@ function ifc()
             "Choose the network interface by number : "
         read -a _WINT_SEL
 
-        printf "%s\n" "You selected:"
+        printf "\n%s\n" "You selected:"
         for ITER in "${_WINT_SEL[@]}"
         do
             if [[ "${ITER}" -le "${#_WINT_AR[@]}" ]]
             then
-                printf "%s\n" "${_WINT_AR[$ITER]}"
+                printf "%s\n\n" "${_WINT_AR[$ITER]}"
                 _WINT=${_WINT_AR[$ITER]}
             else
                 printf "%s\n" "Invalid choice" ""
@@ -82,6 +82,8 @@ function ifc()
     else
         declare -g _WINT="${_WINT_AR[$_CNT]}"
     fi
+
+    printf "\n\n" ""
 }
 
 function ctl()
@@ -203,6 +205,8 @@ function ipt()
 
     /etc/init.d/iptables save
     ${_IPT} -L -v --line-numbers
+
+    printf "\n\n%s\n\n" "Now restart iptables for rules to work."
 }
 
 clear
