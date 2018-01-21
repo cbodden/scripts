@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/env bash
+=======
+#!/usr/bin/env bash[0/104]
+>>>>>>> devwork
 
 _FNAME=""
 _OPTIN="-a -t"
@@ -19,8 +23,12 @@ do
 done
 shift $((OPTIND-1))
 
+<<<<<<< HEAD
 declare -a _FILES=($(\
     find . -maxdepth 1 -name '*' -exec file {} \; \
+=======
+declare -a _FILES=($(find . -maxdepth 1 -name '*' -exec file {} \; \
+>>>>>>> devwork
     | grep -o -P '^.+: \w+ image' \
     | cut -d: -f1 \
     | sed -e 's/.\///'))
