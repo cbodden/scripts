@@ -1,4 +1,4 @@
-#!/usr/bin/env bash[0/104]
+#!/usr/bin/env bash
 
 _FNAME=""
 _OPTIN="-a -t"
