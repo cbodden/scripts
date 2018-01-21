@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 #!/usr/bin/env bash
 =======
 #!/usr/bin/env bash[0/104]
+>>>>>>> devwork
+=======
+#!/usr/bin/env bash
 >>>>>>> devwork
 
 _FNAME=""
