@@ -1,16 +1,11 @@
-#!/usr/bin/env bash
-
-_FTYPE="bmp
-gif
-jpg
-png"
+#!/usr/bin/env bash[0/104]
 
 _FNAME=""
 _OPTIN="-a -t"
 
 if [ ! -x "$(command -v sxiv)" ]
 then
-    printf "\n%s\n" \
+    printf "\n%s\n\n" \
         "-=-=-=-= sxiv not installed =-=-=-=-"
     exit 1
 fi
@@ -22,27 +17,32 @@ do
             ;;
     esac
 done
-## [ ${OPTIND} -eq 1 ] && { usage ; }
 shift $((OPTIND-1))
 
-for ITER in ${_FTYPE}
+declare -a _FILES=($(find . -maxdepth 1 -name '*' -exec file {} \; \
+    | grep -o -P '^.+: \w+ image' \
+    | cut -d: -f1 \
+    | sed -e 's/.\///'))
+
+if [[ "${#_FILES[@]}" -eq "0" ]]
+then
+    printf "\n%s\n\n" \
+        "no image files in this directory"
+    exit 1
+fi
+
+for ITER in ${_FILES[@]}
 do
-    _FCNT=$(ls *.${ITER} 2> /dev/null \
-        | wc -l)
-    if [ "${_FCNT}" != "0" ]
-    then
-        _FNAME="${ITER},${_FNAME}"
-    fi
-    _FEDIT=${_FNAME/%,/}
+    _FNAME="${ITER},${_FNAME}"
 done
 
-_FOUT=$(echo ${_FEDIT} \
+_FOUT=$(echo ${_FNAME} \
     | sed -e 's/[^,]//g' \
     | wc -c)
 
 if [ "${_FOUT}" -le "1" ]
 then
-    eval sxiv ${_OPTIN} *.${_FEDIT}
+    eval sxiv ${_OPTIN} ${_FNAME}
 else
-    eval sxiv ${_OPTIN} *.\{${_FEDIT}\}
+    eval sxiv ${_OPTIN} \{${_FNAME}\}
 fi
