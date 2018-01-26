@@ -19,11 +19,18 @@ do
 done
 shift $((OPTIND-1))
 
+_SUB=$1 ; shift
+if [[ ! -d "${_SUB}" ]]
+then
+    _SUB="."
+fi
+
 declare -a _FILES=($(\
-    find . -maxdepth 1 -name '*' -exec file {} \; \
+    find ${_SUB} -maxdepth 1 -name '*' -exec file {} \; \
     | grep -o -P '^.+: \w+ image' \
     | cut -d: -f1 \
-    | sed -e 's/.\///'))
+    | sort -g ))
+    # | sed -e 's/.\///'))
 
 if [[ "${#_FILES[@]}" -eq "0" ]]
 then
@@ -34,7 +41,7 @@ fi
 
 for ITER in ${_FILES[@]}
 do
-    _FNAME="${ITER},${_FNAME}"
+    _FNAME="${_FNAME},${ITER}"
 done
 
 _FOUT=$(echo ${_FNAME} \
