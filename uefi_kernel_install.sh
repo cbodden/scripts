@@ -69,10 +69,10 @@ function _kernel_to_boot()
 {
     printf "%s\n" \
         "${_BLU}Now copying ${KERN_VER_FULL} to ${BOOT}" \
-        "${_RED}cp ${KERN_PATH}${BZIMG} ${BOOT}bzimage-${KERN_VER_FULL}.efi" \
+        "${_RED}cp ${KERN_PATH}${BZIMG} ${BOOT}bzImage-${KERN_VER_FULL}.efi" \
         "${_CLR}"
     pause
-    sudo cp ${KERN_PATH}${BZIMG} ${BOOT}bzimage-${KERN_VER_FULL}.efi
+    sudo cp ${KERN_PATH}${BZIMG} ${BOOT}bzImage-${KERN_VER_FULL}.efi
 }
 
 function _make_initramfs()
@@ -101,7 +101,7 @@ function _install_new_boot
         --create \
         --part 0 \
         --label Gentoo ${KERN_VER_FULL} \
-        --loader '\EFI\gentoo\bzimage-${KERN_VER_FULL}.efi' \
+        --loader '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi' \
         --unicode 'initrd=\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'"
     printf "%s\n" \
         "${_BLU}Now writing new UEFI boot entry" \
