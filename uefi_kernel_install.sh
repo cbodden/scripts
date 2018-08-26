@@ -40,7 +40,7 @@ function main()
 function pause()
 {
     printf "%s\n" \
-        "${_GRN}Press enter to continue. . . .${_CLR} "
+        "${_GRN}. . . .Press enter to continue. . . .${_CLR}"
     read -p "$*"
 }
 
@@ -57,13 +57,12 @@ function _testVars()
 
 function _rw_efivars()
 {
-        # "${_BLU}Now mounting /sys/firmware/efi/efivars read write" \
     printf "%s\n" \
-        "${_BLU}Run this command: " \
+        "${_BLU}Now mounting /sys/firmware/efi/efivars read write" \
         "${_RED}sudo mount /sys/firmware/efi/efivars -o rw,remount" \
         "${_CLR}"
     pause
-    # sudo mount /sys/firmware/efi/efivars -o rw,remount
+    sudo mount /sys/firmware/efi/efivars -o rw,remount
 }
 
 function _kernel_to_boot()
@@ -88,18 +87,17 @@ function _make_initramfs()
 
 function _clear_old_boot
 {
-        # "${_BLU}Now clearing the default boot from efibootmgr" \
     printf "%s\n" \
-        "${_BLU}Now run this command : " \
+        "${_BLU}Now clearing the default boot from efibootmgr" \
         "${_RED}sudo efibootmgr -b 0000 -B" \
         "${_CLR}"
     pause
-    # sudo efibootmgr -b 0000 -B
+    sudo efibootmgr -b 0000 -B
 }
 
 function _install_new_boot
 {
-    _PARAM_0="sudo efibootmgr"
+    _PARAM_0="/usr/sbin/efibootmgr"
     _PARAM_1=" --create --part 0 --label \"Gentoo ${KERN_VER_FULL}\""
     _PARAM_2=" --loader '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi'"
     _PARAM_3=" -u 'initrd=\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'"
@@ -111,18 +109,17 @@ function _install_new_boot
     # echo "sudo efibootmgr ${_BOOT_PARAM}"
     # printf "%s\n" \
     #    "${_PARAM_0}${_PARAM_1}${_PARAM_2}${_PARAM_3}"
-    # ${_PARAM_0}${_PARAM_1}${_PARAM_2}${_PARAM_3}
+    eval sudo ${_PARAM_0}${_PARAM_1}${_PARAM_2}${_PARAM_3}
 }
 
 function _ro_efivars()
 {
-        # "${_BLU}Now mounting /sys/firmware/efi/efivars read only" \
     printf "%s\n" \
-        "${_BLU}Now run this command : " \
+        "${_BLU}Now mounting /sys/firmware/efi/efivars read only" \
         "${_RED}sudo mount /sys/firmware/efi/efivars -o ro,remount" \
         "${_CLR}"
     pause
-    # sudo mount /sys/firmware/efi/efivars -o ro,remount
+    sudo mount /sys/firmware/efi/efivars -o ro,remount
 }
 
 main
