@@ -87,12 +87,19 @@ function _make_initramfs()
 
 function _clear_old_boot
 {
+    local _UEFI_OBJ=$(sudo efibootmgr \
+        | awk '/^Boot0/ {print $1}' \
+        | tr -d "*")
     printf "%s\n" \
         "${_BLU}Now clearing the default boot from efibootmgr" \
         "${_RED}sudo efibootmgr -b 0000 -B" \
         "${_CLR}"
     pause
-    sudo efibootmgr -b 0000 -B
+    for ITER in ${_UEFI_OBJ}
+    do
+        sudo efibootmgr -b ${ITER#Boot} -B
+    done
+    # sudo efibootmgr -b 0000 -B
 }
 
 function _install_new_boot
@@ -102,13 +109,10 @@ function _install_new_boot
     _PARAM_2=" --loader '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi'"
     _PARAM_3=" -u 'initrd=\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'"
     printf "%s\n" \
-        "${_BLU}Now run this command : " \
+        "${_BLU}Now installing the new kernel and initramfs to UEFI" \
         "${_RED}${_PARAM_0}${_PARAM_1}${_PARAM_2}${_PARAM_3}" \
         "${_CLR}"
     pause
-    # echo "sudo efibootmgr ${_BOOT_PARAM}"
-    # printf "%s\n" \
-    #    "${_PARAM_0}${_PARAM_1}${_PARAM_2}${_PARAM_3}"
     eval sudo ${_PARAM_0}${_PARAM_1}${_PARAM_2}${_PARAM_3}
 }
 
