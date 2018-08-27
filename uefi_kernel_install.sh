@@ -99,7 +99,6 @@ function _clear_old_boot
     do
         sudo efibootmgr -b ${ITER#Boot} -B
     done
-    # sudo efibootmgr -b 0000 -B
 }
 
 function _install_new_boot
