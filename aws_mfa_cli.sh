@@ -9,7 +9,7 @@
 #         NOTES: duration set to 3600
 #        AUTHOR: Cesar B
 #       CREATED: 09/14/2018 11:04:42 EDT
-#      REVISION: 3
+#      REVISION: 4
 #===============================================================================
 
 LC_ALL=C
@@ -63,15 +63,17 @@ function _getMFA()
         "Users --> Your User --> Security Credentials. " \
         "It should look something like: " \
         "arn:aws:iam::123456789012:mfa/user or GAHT1234567"
-    echo -n "Assigned MFA device: "
+    printf "%s" \
+        "Assigned MFA device: "
     read _MFA_DEVICE
 
     # grab MFA token code
-    printf "%s\n" "" "" \
+    printf "%s\n" "" \
         "For this step, we need the token code from your MFA device" \
         "which should be six number code from Authy or Google Auth " \
         "similar to 123456"
-    echo -n "MFA token code: "
+    printf "%s" \
+        "MFA token code: "
     read _MFA_TOKEN_CODE
 }
 
