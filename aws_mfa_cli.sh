@@ -30,7 +30,8 @@ function main()
             exit 1
             ;;
     esac
-    trap 'rm -rf ${_TMP_AWS}' 0 1 2 3 9 15
+    trap 'rm ${_TMP_AWS}' 0 1 3 9 15
+    trap 'trap - SIGINT; rm ${_TMP_AWS}; kill -SIGINT $$' SIGINT;
 
     case "$(echo $SHELL 2>/dev/null)" in
         '/bin/bash')
