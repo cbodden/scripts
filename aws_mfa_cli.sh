@@ -54,6 +54,11 @@ function main()
     done
 }
 
+function _cleanup()
+{
+    rm /tmp/${NAME}*
+}
+
 function _getMFA()
 {
     # grab MFA device
@@ -110,6 +115,7 @@ function _setKeys()
 
 # run functions
 main
+_cleanup
 clear
 _getMFA
 _getKeys
