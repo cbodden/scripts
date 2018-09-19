@@ -100,12 +100,12 @@ function _unsetKeys()
 function _setKeys()
 {
     # set new access key id, secret access key, and session token
-    export AWS_ACCESS_KEY_ID=$(cat ${_TMP_AWS} \
-        | awk -F'"' '/AccessKeyId/ {print $4}')
-    export AWS_SECRET_ACCESS_KEY=$(cat ${_TMP_AWS} \
-        | awk -F'"' '/SecretAccessKey/ {print $4}')
-    export AWS_SESSION_TOKEN=$(cat ${_TMP_AWS} \
-        | awk -F'"' '/SessionToken/ {print $4}')
+    export AWS_ACCESS_KEY_ID=$( \
+        awk -F'"' '/AccessKeyId/ {print $4}' ${_TMP_AWS})
+    export AWS_SECRET_ACCESS_KEY=$( \
+        awk -F'"' '/SecretAccessKey/ {print $4}' ${_TMP_AWS})
+    export AWS_SESSION_TOKEN=$( \
+        awk -F'"' '/SessionToken/ {print $4}' ${_TMP_AWS})
 }
 
 # run functions
