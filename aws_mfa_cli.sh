@@ -71,7 +71,6 @@ function _getMFA()
         "For this step, we need the token code from your MFA device" \
         "which should be six number code from Authy or Google Auth " \
         "similar to 123456"
-    # read -p 'MFA token code: ' _MFA_TOKEN_CODE
     echo -n "MFA token code: "
     read _MFA_TOKEN_CODE
 }
