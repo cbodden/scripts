@@ -18,7 +18,7 @@ NAME=$(basename $0)
 
 function main()
 {
-    # temp file, trap statement, and OS check. exit on !{Linux,Darwin}
+    # temp file via OS check and trap statement. exit on !{Linux || Darwin}
     case "$(uname 2>/dev/null)" in
         'Linux')
             _TMP_AWS=$(mktemp --tmpdir ${NAME}_$$-XXXX.tmp)
@@ -33,6 +33,7 @@ function main()
     trap 'rm ${_TMP_AWS}' 0 1 3 9 15
     trap 'trap - SIGINT; rm ${_TMP_AWS}; kill -SIGINT $$' SIGINT;
 
+    # if $SHELL == /bin/bash have some default sets
     case "$(echo $SHELL 2>/dev/null)" in
         '/bin/bash')
             set -o nounset
@@ -40,7 +41,7 @@ function main()
             ;;
     esac
 
-    # check if these deps exist else exit 1
+    # check if deps exist else exit 1
     local DEPS="aws"
     for _DEPS in ${DEPS}
     do
@@ -55,17 +56,18 @@ function main()
 
 function _getMFA()
 {
+    # grab MFA device
     printf "%s\n" \
         "For this step, we need the Assigned MFA device from :" \
         "https://console.aws.amazon.com/iam/home#/home  -- under :" \
         "Users --> Your User --> Security Credentials. " \
         "It should look something like: " \
         "arn:aws:iam::123456789012:mfa/user or GAHT1234567"
-    #read -p 'Assigned MFA device: ' _MFA_DEVICE
     echo -n "Assigned MFA device: "
     read _MFA_DEVICE
-    printf "%s\n" "" ""
-    printf "%s\n" \
+
+    # grab MFA token code
+    printf "%s\n" "" "" \
         "For this step, we need the token code from your MFA device" \
         "which should be six number code from Authy or Google Auth " \
         "similar to 123456"
@@ -76,6 +78,7 @@ function _getMFA()
 
 function _getKeys()
 {
+    # query AWS for secret access key and session token while setting duration
     $(which aws) \
         sts \
         get-session-token \
@@ -87,6 +90,7 @@ function _getKeys()
 
 function _unsetKeys()
 {
+    # unset previous access kley id, secret access key, and session token
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
@@ -94,6 +98,7 @@ function _unsetKeys()
 
 function _setKeys()
 {
+    # set new access key id, secret access key, and session token
     export AWS_ACCESS_KEY_ID=$(cat ${_TMP_AWS} \
         | awk -F'"' '/AccessKeyId/ {print $4}')
     export AWS_SECRET_ACCESS_KEY=$(cat ${_TMP_AWS} \
@@ -102,7 +107,7 @@ function _setKeys()
         | awk -F'"' '/SessionToken/ {print $4}')
 }
 
-
+# run functions
 main
 clear
 _getMFA
