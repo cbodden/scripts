@@ -104,8 +104,8 @@ function _clear_old_boot
 function _install_new_boot
 {
     _PARAM_0="/usr/sbin/efibootmgr"
-    _PARAM_1=" --create --part 0 --label \"Gentoo ${KERN_VER_FULL}\""
-    _PARAM_2=" --loader '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi'"
+    _PARAM_1=" -c -d /dev/sda -p 1 -L \"Gentoo ${KERN_VER_FULL}\""
+    _PARAM_2=" -l '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi'"
     _PARAM_3=" -u 'initrd=\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'"
     printf "%s\n" \
         "${_BLU}Now installing the new kernel and initramfs to UEFI" \
