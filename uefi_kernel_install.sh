@@ -91,8 +91,7 @@ function _clear_old_boot
         | awk '/^Boot0/ {print $1}' \
         | tr -d "*")
     printf "%s\n" \
-        "${_BLU}Now clearing the default boot from efibootmgr" \
-        "${_RED}sudo efibootmgr -b 0000 -B" \
+        "${_RED}Now clearing the default boot from efibootmgr" \
         "${_CLR}"
     pause
     for ITER in ${_UEFI_OBJ}
@@ -105,7 +104,7 @@ function _install_new_boot
 {
     _PARAM_0="/usr/sbin/efibootmgr"
     _PARAM_1=" -c -d /dev/$(lsblk | awk '/disk/ {print $1}')"
-    _PARAM_2=" -p 1 -L \"Gentoo ${KERN_VER_FULL}\""
+    _PARAM_2=" -e 3 -p 1 -L \"Gentoo ${KERN_VER_FULL}\""
     _PARAM_3=" -l '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi'"
     _PARAM_4=" -u 'initrd=\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'"
     printf "%s\n" \
