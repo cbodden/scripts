@@ -12,7 +12,23 @@
 #      REVISION: .1
 #===============================================================================
 
-set -o nounset
+case "$(echo $SHELL 2>/dev/null)" in
+    '/bin/bash')
+        set -o nounset
+        set -o pipefail
+        ;;
+esac
+
+DEPS="iwconfig"
+for _DEPS in ${DEPS}
+do
+    if [ -z "$(which ${_DEPS} 2>/dev/null)" ]
+    then
+        printf "%s\n" \
+            "${_DEPS} not found"
+        exit 1
+    fi
+done
 
 _IFACE=$(\
     iwconfig 2>&1 \
