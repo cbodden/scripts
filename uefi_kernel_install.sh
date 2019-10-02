@@ -29,6 +29,7 @@ function main()
     readonly BLU=$(tput setaf 4)
     readonly GRN=$(tput setaf 40)
     readonly CLR=$(tput sgr0)
+
     local _R_UID="0"
     if [ "${UID}" -ne "${_R_UID}" ]
     then
@@ -36,6 +37,7 @@ function main()
             "${RED}. . .Needs sudo. . .${CLR}"
         exit 1
     fi
+
     local _DEPS="mount dracut efibootmgr lsblk"
     for ITER in ${_DEPS}
     do
