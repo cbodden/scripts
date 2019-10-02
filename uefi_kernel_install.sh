@@ -63,7 +63,7 @@ function main()
     readonly MAJ=$(echo ${DISKMAJ} \
                  | awk '{print $2}' \
                  | cut -d: -f2)
-   clear
+    clear
 }
 
 function _Pause()
