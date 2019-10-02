@@ -4,15 +4,15 @@
 #          FILE: uefi_kernel_install.sh
 #         USAGE: ./uefi_kernel_install.sh
 #
-#   DESCRIPTION: this script assists with adding a new kernel to uefi
+#   DESCRIPTION: this script assists with adding a new kernel to efi stub
 #       OPTIONS: none
-#  REQUIREMENTS: efibootmgr, sudo, dracut
+#  REQUIREMENTS: efibootmgr, sudo, dracut, lsblk
 #          BUGS: none so far
 #         NOTES: use wisely
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 08/25/2018 08:32:56 PM EDT
-#      REVISION: 2
+#      REVISION: 3
 #===============================================================================
 
 LC_ALL=C
@@ -30,6 +30,13 @@ function main()
     KERN_VER=$(basename ${KERN_PATH})
     KERN_VER_FULL=$(file ${KERN_PATH}${BZIMG} \
         | awk '{print $9}')
+    _DISKMAJ=$(sudo lsblk -a -p -l \
+        | awk '/\ \/boot/')
+    _DISK=$(echo ${_DISKMAJ} \
+        | awk '{print $1}')
+    _MAJ=$(echo ${_DISKMAJ} \
+        | awk '{print $2}' \
+        | cut -d: -f2)
     _RED=$(tput setaf 1)
     _BLU=$(tput setaf 4)
     _GRN=$(tput setaf 40)
@@ -87,11 +94,9 @@ function _make_initramfs()
 
 function _clear_old_boot
 {
-    ##local _UEFI_OBJ=$(sudo efibootmgr \
-    ##    | awk '/^Boot0/ {print $1}' \
-    ##    | tr -d "*")
+        ## | awk '/^Boot0/ {print substr($1, 0, length($1)-1)}')
     local _UEFI_OBJ=$(sudo efibootmgr \
-        | awk '/^Boot0/ {print substr($1, 0, length($1)-1)}')
+        | awk '/[Gg]entoo/ {print substr($1, 0, length($1)-1)}')
     printf "%s\n" \
         "${_RED}Now clearing the default boot from efibootmgr" \
         "${_CLR}"
@@ -105,9 +110,8 @@ function _clear_old_boot
 function _install_new_boot
 {
     _P0="/usr/sbin/efibootmgr"
-    ##_PARAM_1=" -c -d /dev/$(lsblk | awk '/disk/ {print $1}')"
-    _P1=" -c -d /dev/$(awk '/live/ {print $1}' <(lsblk -o NAME,STATE))"
-    _P2=" -e 3 -p 1 -L \"Gentoo ${KERN_VER_FULL}\""
+    _P1=" -c -d ${_DISK}"
+    _P2=" -p ${_MAJ} -L \"Gentoo ${KERN_VER_FULL}\""
     _P3=" -l '\EFI\gentoo\bzImage-${KERN_VER_FULL}.efi'"
     _P4=" -u 'initrd=\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'"
     printf "%s\n" \
