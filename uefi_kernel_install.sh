@@ -113,7 +113,8 @@ function _Make_initramfs()
         "${RED}${DRACUT} ${BOOT}initramfs-${KERN_VER_FULL}.img" \
         "${CLR}"
     _Pause
-    ${DRACUT} ${BOOT}initramfs-${KERN_VER_FULL}.img
+    ${DRACUT} ${BOOT}initramfs-${KERN_VER_FULL}.img \
+        --force
 }
 
 function _Clear_Old_Boot
