@@ -59,13 +59,15 @@ function main()
     readonly KERN_VER_FULL=$(file ${KERN_PATH}${BZIMG} \
                  | awk '{print $9}')
     readonly DISKMAJ=$(${LSBLK} -a -p -l \
-                 | awk '/\ \/boot/')
+                 | awk '/\/boot/')
     readonly DISK=$(echo ${DISKMAJ} \
                  | awk '{print $1}')
     readonly MAJ=$(echo ${DISKMAJ} \
-                 | awk '{print $2}' \
-                 | cut -d: -f2)
-    clear
+                 | awk '{print $1}' \
+                 | tail -c 2 )
+                 #| awk '{print $2}' \
+                 #| cut -d: -f2)
+    #clear
 }
 
 function _Pause()
