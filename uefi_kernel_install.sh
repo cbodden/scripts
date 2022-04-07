@@ -67,7 +67,7 @@ function main()
                  | tail -c 2 )
                  #| awk '{print $2}' \
                  #| cut -d: -f2)
-    #clear
+    clear
 }
 
 function _Pause()
