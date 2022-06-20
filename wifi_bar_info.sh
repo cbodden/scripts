@@ -46,7 +46,7 @@ then
         iw dev ${_IFACE} link 2>&1 \
         | awk '/signal/ {print $2}')
 
-    echo ${_ESSID} [${_STR}]
+    echo ${_ESSID} [${_STR}/-110]
 
 else
 
