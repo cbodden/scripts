@@ -19,6 +19,11 @@ case "$(echo $SHELL 2>/dev/null)" in
         ;;
 esac
 
+GRN=$(tput setaf 2)
+YLW=$(tput setaf 3)
+RED=$(tput setaf 1)
+CLR=$(tput sgr0)
+
 if [[ -z "$(which iw 2>/dev/null)" && -z "$(which iwconfig 2>/dev/null)" ]]
 then
     echo "WIFI tools not found"
@@ -46,7 +51,25 @@ then
         iw dev ${_IFACE} link 2>&1 \
         | awk '/signal/ {print $2}')
 
-    echo ${_ESSID} [${_STR}/-110]
+    if [[ ${_STR} -le -40 && ${_STR} -ge -60 ]]
+    then
+        ## green
+        _COLOR=$(tput setaf 2)
+    fi
+
+    if [[ ${_STR} -le -61 && ${_STR} -ge -90 ]]
+    then
+        ## yellow
+        _COLOR=$(tput setaf 3)
+    fi
+
+    if [[ ${_STR} -le -91 && ${_STR} -ge -110 ]]
+    then
+        ## red
+        _COLOR=$(tput setaf 1)
+    fi
+
+    echo ${_ESSID} [${_COLOR}${_STR}${CLR}/-110]
 
 else
 
