@@ -42,17 +42,11 @@ then
         exit 1
     fi
 
-    _PCT=$(\
-        awk 'NR==3 {printf("%.0f%\n",$3*10/7)}' /proc/net/wireless)
+    _STR=$(\
+        iw dev ${_IFACE} link 2>&1 \
+        | awk '/signal/ {print $2}')
 
-    _TIC=$(eval \
-        printf "X%.0s" {1..10})
-
-    _MRK=$(eval \
-        printf "%s%-$((${_PCT%%%*}/10))s%s" "[" "${_TIC}" "]" \
-        | tr ' ~' '- ')
-
-    echo ${_ESSID} ${_MRK}
+    echo ${_ESSID} [${_STR}]
 
 else
 
