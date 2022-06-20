@@ -55,21 +55,20 @@ then
     then
         ## green
         _COLOR=$(tput setaf 2)
-    fi
-
-    if [[ ${_STR} -le -61 && ${_STR} -ge -90 ]]
+        echo "${_ESSID} [${_COLOR}${_STR}${CLR}/-110]"
+    elif [[ ${_STR} -le -61 && ${_STR} -ge -90 ]]
     then
         ## yellow
         _COLOR=$(tput setaf 3)
-    fi
-
-    if [[ ${_STR} -le -91 && ${_STR} -ge -110 ]]
+        echo "${_ESSID} [${_COLOR}${_STR}${CLR}/-110]"
+    elif [[ ${_STR} -le -91 && ${_STR} -ge -110 ]]
     then
         ## red
         _COLOR=$(tput setaf 1)
+        echo "${_ESSID} [${_COLOR}${_STR}${CLR}/-110]"
     fi
 
-    echo ${_ESSID} [${_COLOR}${_STR}${CLR}/-110]
+    ## echo "${_ESSID} [${_COLOR}${_STR}${CLR}/-110]"
 
 else
 
