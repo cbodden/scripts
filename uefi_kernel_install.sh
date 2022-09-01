@@ -116,7 +116,7 @@ function _Make_initramfs()
         "${CLR}"
     _Pause
     ${DRACUT} ${BOOT}initramfs-${KERN_VER_FULL}.img \
-        --force
+        --force --hostonly
 }
 
 function _Clear_Old_Boot
