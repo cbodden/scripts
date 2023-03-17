@@ -57,3 +57,10 @@ do
     done
 done
 
+# need to add :
+## multiwords
+## no output option till end (testing mode)
+## choice between input or dict file
+## number practice (mix letters and numbers also)
+## variable speed (1-3)
+## more to add.....
