@@ -28,7 +28,7 @@ printf "%s\n" \
     "admin capability add ${USER} kick" \
     "admin capability add ${USER} op" \
     "admin capability add ${USER} topic" \
-    "admin capability add ${USER} voice" "" "" \
+    "admin capability add ${USER} voice" "" \
     "# channel capabilities" \
     "channel capability add #${CHAN} ${USER} admin" \
     "channel capability add #${CHAN} ${USER} ban" \
