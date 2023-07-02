@@ -6,7 +6,7 @@ clear
 if [[ -z $1 || -z $2 ]]
 then
     printf "%s\n" \
-        "" "Command needs to be run with nick and channel (without #):" \
+        "" "Command needs to be run with channel (without #) and nick :" \
         "" "${NAME} CHANNEL NICK" ""
     exit
 fi
@@ -18,9 +18,9 @@ PW="$(\
     | head -c 13 ; echo '' \
     )"
 
-# adding a user to hkc
+# adding a user to admin and to channel
 printf "%s\n" \
-    "user register ${USER} ${PW}" "" \
+    "" "user register ${USER} ${PW}" "" \
     "# admin capabilities"
 for ITER in admin ban invite kick op topic voice
 do
