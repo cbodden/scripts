@@ -21,22 +21,18 @@ PW="$(\
 # adding a user to hkc
 printf "%s\n" \
     "user register ${USER} ${PW}" "" \
-    "# admin capabilities" \
-    "admin capability add ${USER} admin" \
-    "admin capability add ${USER} ban" \
-    "admin capability add ${USER} invite" \
-    "admin capability add ${USER} kick" \
-    "admin capability add ${USER} op" \
-    "admin capability add ${USER} topic" \
-    "admin capability add ${USER} voice" "" \
-    "# channel capabilities" \
-    "channel capability add #${CHAN} ${USER} admin" \
-    "channel capability add #${CHAN} ${USER} ban" \
-    "channel capability add #${CHAN} ${USER} invite" \
-    "channel capability add #${CHAN} ${USER} kick" \
-    "channel capability add #${CHAN} ${USER} op" \
-    "channel capability add #${CHAN} ${USER} topic" \
-    "channel capability add #${CHAN} ${USER} voice"
+    "# admin capabilities"
+for ITER in admin ban invite kick op topic voice
+do
+    echo "admin capability add ${USER} ${ITER}"
+done
+
+printf "%s\n" \
+    "" "# channel capabilities"
+for ITER in admin ban invite kick op topic voice
+do
+    echo "channel capability add #${CHAN} ${USER} ${ITER}"
+done
 
 # send to user
 printf "%s\n" \
