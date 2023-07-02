@@ -15,7 +15,7 @@ CHAN="$1"
 USER="$2"
 PW="$(\
     tr -dc A-Za-z0-9 </dev/urandom \
-    | head -c 13 ; echo ''\
+    | head -c 13 ; echo '' \
     )"
 
 # adding a user to hkc
