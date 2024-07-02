@@ -40,9 +40,9 @@ function main()
 
     readonly NAME=$(basename $0)
     readonly TP_ID=$(${XINPUT} list \
-                 | awk -F'=' '/Touch[p,P]ad/ {print substr($2,1,2)}')
-    readonly TP_LINE=$(${XINPUT}  list \
-                 | awk -F'=' '/Touch[p,P]ad/ {print $0}')
+                 | awk -F'=' '/[Tt]ouch[Pp]ad/ {print substr($2,1,2)}')
+    readonly TP_LINE=$(${XINPUT} list \
+                 | awk -F'=' '/[Tt]ouch[Pp]ad/ {print $0}')
 }
 
 function _Toggle()
