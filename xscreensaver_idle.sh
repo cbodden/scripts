@@ -6,13 +6,13 @@
 #
 #   DESCRIPTION: deactivates xscreensaver if pacmd has audio
 #       OPTIONS: none
-#  REQUIREMENTS: pacmd xscreensaver
+#  REQUIREMENTS: pacmd wmctrl xscreensaver
 #          BUGS: none so far
 #         NOTES: use wisely
 #        AUTHOR: Cesar Bodden (), cesar@poa.nyc
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 20-JUL-24
-#      REVISION: 1
+#      REVISION: 2
 #===============================================================================
 
 LC_ALL=C
@@ -25,7 +25,7 @@ trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 function main()
 {
-    local _DEPS="pacmd xscreensaver"
+    local _DEPS="pacmd wmctrl xscreensaver"
     for ITER in ${_DEPS}
     do
         if [ -z "$(which ${ITER} 2>/dev/null)" ]
@@ -40,16 +40,17 @@ function main()
 
     readonly NAME=$(basename $0)
     readonly SLEEP="1m"
-    readonly STATE=$(${PACMD} list-sinks \
-                 | awk '/*/{c=5}c&&c--' \
-                 | awk '/state:/ {print $2}')
 }
 
 function _Toggle()
 {
     while true
     do
-        if [ ${STATE} == SUSPENDED ] || [ ${STATE} == IDLE ]
+        ${WMCTRL} -m &> /dev/null || exit 1
+        local _STATE=$(${PACMD} list-sinks \
+            | awk '/*/{c=5}c&&c--' \
+            | awk '/state:/ {print $2}')
+        if [ ${_STATE} == SUSPENDED ] || [ ${_STATE} == IDLE ]
         then
             sleep ${SLEEP}
         else
