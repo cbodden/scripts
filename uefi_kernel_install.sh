@@ -99,7 +99,7 @@ function _Timer()
         for ITER in ${_SPINNER[*]}
         do
             printf "\r${ITER}"
-            sleep .1
+            sleep .075
             printf "\r \r"
         done
     done
