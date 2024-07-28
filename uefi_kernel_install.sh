@@ -105,7 +105,7 @@ function _Timer()
     done
 }
 
-function _Menu
+function _Menu()
 {
     while :
     do
@@ -182,7 +182,7 @@ function _Make_initramfs()
         &>/dev/null
 }
 
-function _Clear_Old_Boot
+function _Clear_Old_Boot()
 {
     local _UEFI_OBJ=$(${EFIBOOTMGR} \
         | awk '/[Gg]entoo/ {print substr($1, 0, length($1)-1)}')
@@ -196,7 +196,7 @@ function _Clear_Old_Boot
     done
 }
 
-function _Install_New_Boot
+function _Install_New_Boot()
 {
     local _P0="${EFIBOOTMGR}"
     local _P1=" -c -d ${DISK}"
@@ -221,7 +221,7 @@ function _RO_efivars()
     ${MOUNT} /sys/firmware/efi/efivars -o ro,remount
 }
 
-function _Kexec
+function _Kexec()
 {
     local _P0="${KEXEC}"
     local _P1=" -l "
