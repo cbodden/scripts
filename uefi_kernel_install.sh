@@ -43,19 +43,6 @@ function main()
         exit 1
     fi
 
-    local _DEPS="mount dracut efibootmgr lsblk"
-    for ITER in ${_DEPS}
-    do
-        if [ -z "$(which ${ITER} 2>/dev/null)" ]
-        then
-            printf "%s\n" \
-                "${RED_F}. . .${ITER} not found. . .${CLR}"
-            exit 1
-        else
-            readonly ${ITER^^}="$(which ${ITER})"
-        fi
-    done
-
     readonly NAME=$(basename $0)
     readonly BZIMG="/arch/x86/boot/bzImage"
     readonly BOOT="/boot/EFI/gentoo/"
@@ -71,6 +58,28 @@ function main()
                  | awk '{print $1}' \
                  | tail -c 2 )
     clear
+}
+
+function _Dep()
+{
+    local _DEPS=""
+    while [ $# -gt 0 ]
+    do
+        _DEPS="${_DEPS} $1"
+        shift
+    done
+
+    for ITER in ${_DEPS}
+    do
+        if [ -z "$(which ${ITER} 2>/dev/null)" ]
+        then
+            printf "%s\n" \
+                "${RED_F}. . .${ITER} not found. . .${CLR}"
+            exit 1
+        else
+            readonly ${ITER^^}="$(which ${ITER})"
+        fi
+    done
 }
 
 function _Pause()
@@ -91,7 +100,7 @@ function _Timer()
         do
             printf "\r${ITER}"
             sleep .1
-            printf "\r              \r"
+            printf "\r \r"
         done
     done
 }
@@ -108,24 +117,14 @@ function _Menu
         read -p "(${RED_F}Y${GRN_F})es or (${RED_F}N${GRN_F})o : " _KCHOICE
         case ${_KCHOICE} in
             [yY][eE][sS]|[yY])
-                local _DEPS="kexec"
-                for ITER in ${_DEPS}
-                do
-                    if [ -z "$(which ${ITER} 2>/dev/null)" ]
-                    then
-                        printf "%s\n" \
-                            "${RED_F}. . .${ITER} not found. . .${CLR}"
-                        exit 1
-                    else
-                        readonly ${ITER^^}="$(which ${ITER})"
-                    fi
-                done
+                _Dep mount dracut efibootmgr lsblk kexec
                 printf "%s\n" \
                     "" "${BLU_F}Will reboot into new kernel with kexec" ""
                 readonly _CHOICE=_Kexec
                 break
                 ;;
             [nN][oO]|[nN])
+                _Dep mount dracut efibootmgr lsblk
                 printf "%s\n" \
                     "" "${BLU_F}Will not reboot into new kernel" ""
                 readonly _CHOICE=_Pause
