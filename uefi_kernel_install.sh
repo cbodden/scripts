@@ -108,6 +108,18 @@ function _Menu
         read -p "(${RED_F}Y${GRN_F})es or (${RED_F}N${GRN_F})o : " _KCHOICE
         case ${_KCHOICE} in
             [yY][eE][sS]|[yY])
+                local _DEPS="kexec"
+                for ITER in ${_DEPS}
+                do
+                    if [ -z "$(which ${ITER} 2>/dev/null)" ]
+                    then
+                        printf "%s\n" \
+                            "${RED_F}. . .${ITER} not found. . .${CLR}"
+                        exit 1
+                    else
+                        readonly ${ITER^^}="$(which ${ITER})"
+                    fi
+                done
                 printf "%s\n" \
                     "" "${BLU_F}Will reboot into new kernel with kexec" ""
                 readonly _CHOICE=_Kexec
@@ -212,19 +224,6 @@ function _RO_efivars()
 
 function _Kexec
 {
-    local _DEPS="kexec"
-    for ITER in ${_DEPS}
-    do
-        if [ -z "$(which ${ITER} 2>/dev/null)" ]
-        then
-            printf "%s\n" \
-                "${RED_F}. . .${ITER} not found. . .${CLR}"
-            exit 1
-        else
-            readonly ${ITER^^}="$(which ${ITER})"
-        fi
-    done
-
     local _P0="${KEXEC}"
     local _P1=" -l "
     local _P2="--append=\"`cat /proc/cmdline \
