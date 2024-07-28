@@ -13,7 +13,7 @@
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 08/25/2018 08:32:56 PM EDT
-#      REVISION: 4
+#      REVISION: 5
 #===============================================================================
 
 LC_ALL=C
@@ -70,8 +70,6 @@ function main()
     readonly MAJ=$(echo ${DISKMAJ} \
                  | awk '{print $1}' \
                  | tail -c 2 )
-                 #| awk '{print $2}' \
-                 #| cut -d: -f2)
     clear
 }
 
@@ -84,16 +82,16 @@ function _Pause()
 
 function _Timer()
 {
-    readonly _SPINNER=( '|' '/' '-' '\' );
-    readonly _MAX=$((SECONDS + 10))
+    local _SPINNER=( '|' '/' '-' '\' );
+    local _MAX=$((SECONDS + 10))
 
     while [[ ${SECONDS} -le ${_MAX} ]]
     do
         for ITER in ${_SPINNER[*]}
         do
-            echo -en "\r${ITER}"
+            printf "\r${ITER}"
             sleep .1
-            echo -en "\r              \r"
+            printf "\r              \r"
         done
     done
 }
@@ -229,7 +227,8 @@ function _Kexec
 
     local _P0="${KEXEC}"
     local _P1=" -l "
-    local _P2="--append=\"`cat /proc/cmdline | awk '{print $1}'` "
+    local _P2="--append=\"`cat /proc/cmdline \
+        | awk '{print $1}'` "
     local _P3="initrd='\EFI\gentoo\initramfs-${KERN_VER_FULL}.img'\" "
     local _P4="/boot/EFI/gentoo/bzImage-${KERN_VER_FULL}.efi "
     printf "%s\n" \
@@ -241,7 +240,7 @@ function _Kexec
     sync
     printf "%s\n" \
         "" "${RED_B}${BLU_F}${BLINK}" \
-        ". . . . REBOOTING IN 10 SECONDS. . . ." "${CLR}"
+        ". . . . REBOOTING IN 10 SECONDS. . . .${CLR}"
     _Timer
     ${KEXEC} -e
 }
