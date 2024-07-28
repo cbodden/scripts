@@ -120,14 +120,14 @@ function _Menu
                 _Dep mount dracut efibootmgr lsblk kexec
                 printf "%s\n" \
                     "" "${BLU_F}Will reboot into new kernel with kexec" ""
-                readonly _CHOICE=_Kexec
+                readonly _CHOICE="_Kexec"
                 break
                 ;;
             [nN][oO]|[nN])
                 _Dep mount dracut efibootmgr lsblk
                 printf "%s\n" \
                     "" "${BLU_F}Will not reboot into new kernel" ""
-                readonly _CHOICE=_Pause
+                readonly _CHOICE="exit 0"
                 break
                 ;;
             * )
