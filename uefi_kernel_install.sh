@@ -13,7 +13,7 @@
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 08/25/2018 08:32:56 PM EDT
-#      REVISION: 5
+#      REVISION: 6
 #===============================================================================
 
 LC_ALL=C
@@ -50,13 +50,6 @@ function main()
     readonly KERN_VER=$(basename ${KERN_PATH})
     readonly KERN_VER_FULL=$(file ${KERN_PATH}${BZIMG} \
                  | awk '{print $9}')
-    readonly DISKMAJ=$(${LSBLK} -a -p -l \
-                 | awk '/\/boot/')
-    readonly DISK=$(echo ${DISKMAJ} \
-                 | awk '{print $1}')
-    readonly MAJ=$(echo ${DISKMAJ} \
-                 | awk '{print $1}' \
-                 | tail -c 2 )
     clear
 }
 
@@ -80,6 +73,13 @@ function _Dep()
             readonly ${ITER^^}="$(which ${ITER})"
         fi
     done
+    readonly DISKMAJ=$(${LSBLK} -a -p -l \
+                 | awk '/\/boot/')
+    readonly DISK=$(echo ${DISKMAJ} \
+                 | awk '{print $1}')
+    readonly MAJ=$(echo ${DISKMAJ} \
+                 | awk '{print $1}' \
+                 | tail -c 2 )
 }
 
 function _Pause()
