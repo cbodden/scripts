@@ -178,7 +178,7 @@ function _Make_initramfs()
         "${CLR}"
     _Pause
     ${DRACUT} ${BOOT}initramfs-${KERN_VER_FULL}.img \
-        --force --hostonly \
+        --force --hostonly --xz \
         &>/dev/null
 }
 
