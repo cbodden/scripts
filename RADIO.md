@@ -121,8 +121,8 @@ X | Morad HD VHF Marine Antenna (159 MHz VHF-AIS 6dBi)
 
 RTL-SDRs :
 ----------
-4001 | AIS
-
+4001 | AIS AB
+4002 | AIS CD
 
 
  ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁
