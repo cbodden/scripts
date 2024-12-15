@@ -15,7 +15,6 @@ if [ ! -z ${KEEB} ]
 then
     ## disable internal keyboard if HHKB plugged in
     PROP="0"
-    xmodmap ${HOME}/.xmodmap
 else
     ## enable internal keyboard if HHKB is unplugged
     PROP="1"
