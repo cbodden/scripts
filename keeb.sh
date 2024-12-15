@@ -2,8 +2,8 @@
 
 ##set -x
 DISPLAY=":0.0"
-HOME=/home/cbodden/
-XAUTHORITY=$HOME/.Xauthority
+HOME=/home/cbodden
+XAUTHORITY=${HOME}/.Xauthority
 export DISPLAY XAUTHORITY HOME
 
 ## test if hhkb is plugged in
@@ -15,12 +15,12 @@ if [ ! -z ${KEEB} ]
 then
     ## disable internal keyboard if HHKB plugged in
     PROP="0"
+    xmodmap ${HOME}/.xmodmap
 else
     ## enable internal keyboard if HHKB plugged in
     PROP="1"
 fi
 
-## disable
 xinput set-prop $(\
     xinput list \
     | awk -F'=' '/Set 2 keyboard/ {print substr($2,1,2)}') \
