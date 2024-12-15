@@ -17,7 +17,7 @@ then
     PROP="0"
     xmodmap ${HOME}/.xmodmap
 else
-    ## enable internal keyboard if HHKB plugged in
+    ## enable internal keyboard if HHKB is unplugged
     PROP="1"
 fi
 
