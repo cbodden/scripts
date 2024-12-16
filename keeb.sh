@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# set udev rules with :
+## sudo udevadm control --reload
+
 # udevadm info -a -n /dev/input/event23
 # udevd rule:
 ## KERNEL=="event*" \
