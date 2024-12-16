@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 
-## udevadm info -a -n /dev/input/event23
-## udevd rule:
-# KERNEL=="event*" \
-# , SUBSYSTEM=="input" \
-# , ATTRS{name}=="HHKB-Hybrid_1 Keyboard" \
-# , RUN+="/bin/sh -c '/home/cbodden/git/mine/scripts/keeb.sh'"
+# udevadm info -a -n /dev/input/event23
+# udevd rule:
+## KERNEL=="event*" \
+## , SUBSYSTEM=="input" \
+## , ATTRS{name}=="HHKB-Hybrid_1 Keyboard" \
+## , RUN+="/bin/sh -c '/home/cbodden/git/mine/scripts/keeb.sh'"
 
-## evtest ; cat /sys/class/input/eventXX/device/modalias ; 
-## udevadm info -a -n /dev/input/event23
-## hwdb rule for key map
-## map : https://pkg.go.dev/github.com/holoplot/go-evdev
-# evdev:input:b0005v04FEp0021e0001*
-#  KEYBOARD_KEY_7008a=key_rightctrl ## Henkan
-#  KEYBOARD_KEY_7008b=key_leftmeta  ## Muhenkan
-
+# evtest ; cat /sys/class/input/eventXX/device/modalias ; 
+# udevadm info -a -n /dev/input/event23
+# map : https://pkg.go.dev/github.com/holoplot/go-evdev
+# hwdb rule for key map
+## evdev:input:b0005v04FEp0021e0001*
+##  KEYBOARD_KEY_7008a=key_rightctrl ## Henkan
+##  KEYBOARD_KEY_7008b=key_leftmeta  ## Muhenkan
+# test : 
+## sudo systemd-hwdb update \
+## ; sudo udevadm trigger \
+## ; sudo udevadm info /dev/input/eventX
 
 ##set -x
 DISPLAY=":0"
@@ -30,7 +33,7 @@ KEEB=$(\
 if [ -z ${KEEB} ]
 then
     ## disable internal keyboard if HHKB plugged in
-    sleep 3
+    sleep 1
     PROP="0"
 else
     ## enable internal keyboard if HHKB is unplugged
