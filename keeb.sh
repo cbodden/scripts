@@ -31,7 +31,7 @@ export DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY HOME=$HOME
 ## test if hhkb is plugged in
 KEEB=$(\
     xinput list \
-    | awk -F'=' '/HHKB-Hybrid_1 Keyboard/  {print substr($2,1,2)}')
+    | awk -F'=' '/HHKB-Hybrid_/  {print substr($2,1,2)}')
 
 if [ -z ${KEEB} ]
 then
