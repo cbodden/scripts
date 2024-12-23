@@ -36,7 +36,6 @@ KEEB=$(\
 if [ -z ${KEEB} ]
 then
     ## disable internal keyboard if HHKB plugged in
-    sleep 1
     PROP="0"
 else
     ## enable internal keyboard if HHKB is unplugged
