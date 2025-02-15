@@ -4,16 +4,17 @@
 #          FILE: uefi_kernel_install.sh
 #         USAGE: ./uefi_kernel_install.sh
 #
-#   DESCRIPTION: this script assists with adding a new kernel to efi stub
-#                and also rebooting into the new kern with kexec
+#   DESCRIPTION: this script assists with adding a new kernel to efi stub,
+#                installing the new linux firmware,
+#                and rebooting into the new kern with kexec
 #       OPTIONS: none
-#  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec
+#  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec, elinks, tar
 #          BUGS: none so far
 #         NOTES: use wisely
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 08/25/2018 08:32:56 PM EDT
-#      REVISION: 6
+#      REVISION: 7
 #===============================================================================
 
 LC_ALL=C
@@ -73,6 +74,10 @@ function _Dep()
             readonly ${ITER^^}="$(which ${ITER})"
         fi
     done
+}
+
+function _Maj()
+{
     readonly DISKMAJ=$(${LSBLK} -a -p -l \
                  | awk '/\/boot/')
     readonly DISK=$(echo ${DISKMAJ} \
@@ -120,14 +125,14 @@ function _Menu()
                 _Dep mount dracut efibootmgr lsblk kexec
                 printf "%s\n" \
                     "" "${BLU_F}Will reboot into new kernel with kexec" ""
-                readonly _CHOICE="_Kexec"
+                readonly _KCHOICE="_Kexec"
                 break
                 ;;
             [nN][oO]|[nN])
                 _Dep mount dracut efibootmgr lsblk
                 printf "%s\n" \
                     "" "${BLU_F}Will not reboot into new kernel" ""
-                readonly _CHOICE="exit 0"
+                readonly _KCHOICE="exit 0"
                 break
                 ;;
             * )
@@ -137,6 +142,35 @@ function _Menu()
                 ;;
         esac
     done
+
+    while :
+    do
+        printf "%s\n" \
+            "${BLU_F}Do you want to install the latest firmware ??${GRN_F}"
+        read -p "(${RED_F}Y${GRN_F})es or (${RED_F}N${GRN_F})o : " _FCHOICE
+        case ${_FCHOICE} in
+            [yY][eE][sS]|[yY])
+                _Dep elinks wget tar
+                printf "%s\n" \
+                    "" "${BLU_F}Will install the latest firmware" ""
+                readonly _FCHOICE="_Firmware"
+                break
+                ;;
+            [nN][oO]|[nN])
+                printf "%s\n" \
+                    "" "${BLU_F}Will not install latest firmware" ""
+                readonly _FCHOICE="echo"
+                break
+                ;;
+            * )
+                printf "%s\n" \
+                    ${RED_F}"Please answer Yes or No."
+                clear
+                ;;
+        esac
+    done
+
+    _Maj
 }
 
 function _TestVars()
@@ -221,6 +255,45 @@ function _RO_efivars()
     ${MOUNT} /sys/firmware/efi/efivars -o ro,remount
 }
 
+function _Firmware()
+{
+    readonly GITLAB="https://gitlab.com/kernel-firmware/linux-firmware"
+    readonly TAGS="${GITLAB}/-/tags"
+    readonly ARCHIVE="${GITLAB}/-/archive/"
+
+    local _LINK=$(${ELINKS} -dump ${TAGS} \
+        | grep -m 1 "/tags/")
+    local _VER=${_LINK##*/}
+    local _DLOAD_VER="${_VER}/linux-firmware-${_VER}"
+
+    mkdir /tmp/${_VER}/
+    cd /tmp/${_VER}/
+
+    printf "%s\n" \
+        "${BLU_F}Downloading Version : ${_DLOAD_VER##*/}" \
+        "${RED_F}${WGET} ${ARCHIVE}${_DLOAD_VER}.tar.gz -q --show-progress" \
+        "${CLR}"
+    ${WGET} ${ARCHIVE}${_DLOAD_VER}.tar.gz -q --show-progress
+
+    printf "%s\n" \
+        "${BLU_F}Uncompressing ${_DLOAD_VER##*/}" \
+        "${RED_F}${TAR} -xzf ${_DLOAD_VER##*/}.tar.gz" \
+        "${CLR}"
+    ${TAR} -xzf ${_DLOAD_VER##*/}.tar.gz
+
+    printf "%s\n" \
+        "${BLU_F}Copying ${_DLOAD_VER##*/} to /lib/firmware/" \
+        "${RED_F}cp -r ${_DLOAD_VER##*/}/* /lib/firmware/" \
+        "${CLR}"
+    cp -r ${_DLOAD_VER##*/}/* /lib/firmware/
+
+    printf "%s\n" \
+        "${BLU_F}Removing TMP dir" \
+        "${RED_F}rm -rf /tmp/${_VER}/" \
+        "${CLR}"
+    rm -rf /tmp/${_VER}/
+}
+
 function _Kexec()
 {
     local _P0="${KEXEC}"
@@ -253,4 +326,5 @@ _Make_initramfs
 _Clear_Old_Boot
 _Install_New_Boot
 _RO_efivars
-${_CHOICE}
+${_FCHOICE}
+${_KCHOICE}
