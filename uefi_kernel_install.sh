@@ -266,6 +266,10 @@ function _Firmware()
     local _VER=${_LINK##*/}
     local _DLOAD_VER="${_VER}/linux-firmware-${_VER}"
 
+    printf "%s\n" \
+        "${BLU_F}Creating and switching to TMP (/tmp/${_VER})" \
+        "${RED_F}mkdir /tmp/${_VER}/ ; cd /tmp/${_VER}/" \
+        "${CLR}"
     mkdir /tmp/${_VER}/
     cd /tmp/${_VER}/
 
