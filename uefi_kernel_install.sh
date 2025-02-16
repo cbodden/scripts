@@ -19,6 +19,14 @@
 
 function main()
 {
+    local _R_UID="0"
+    if [ "${UID}" -ne "${_R_UID}" ]
+    then
+        printf "%s\n" \
+            "${RED_F}. . .Needs sudo. . .${CLR}"
+        exit 1
+    fi
+
     readonly RED_F=$(tput setaf 1)
     readonly BLU_F=$(tput setaf 4)
     readonly GRN_F=$(tput setaf 40)
@@ -28,14 +36,6 @@ function main()
     readonly BLINK=$(tput blink)
     readonly CLR=$(tput sgr0)
 
-    local _R_UID="0"
-    if [ "${UID}" -ne "${_R_UID}" ]
-    then
-        printf "%s\n" \
-            "${RED_F}. . .Needs sudo. . .${CLR}"
-        exit 1
-    fi
-
     readonly PROGNAME=$(basename $0)
     readonly PROGDIR=$(readlink -m $(dirname $0))
     readonly BZIMG="/arch/x86/boot/bzImage"
@@ -44,7 +44,6 @@ function main()
     readonly KERN_VER=$(basename ${KERN_PATH})
     readonly KERN_VER_FULL=$(file ${KERN_PATH}${BZIMG} \
                  | awk '{print $9}')
-    clear
 }
 
 function _Dep()
@@ -299,6 +298,8 @@ set -o nounset
 set -o pipefail
 set -u
 trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
+
+clear
 
 main
 
