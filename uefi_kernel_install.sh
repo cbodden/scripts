@@ -291,7 +291,7 @@ function usage()
         -p
                 This option sets pause after every item.
                 Default is disabled.
-        "
+    "
 }
 
 #################################
