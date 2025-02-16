@@ -158,7 +158,8 @@ function _Clear_Old_Boot()
     _Pause
     for ITER in ${_UEFI_OBJ}
     do
-        ${EFIBOOTMGR} -b ${ITER#Boot} -B
+        ${EFIBOOTMGR} -b ${ITER#Boot} -B \
+            &>/dev/null
     done
 }
 
@@ -174,7 +175,8 @@ function _Install_New_Boot()
         "${RED_F}${_P0}${_P1}${_P2}${_P3}${_P4}" \
         "${CLR}"
     _Pause
-    eval ${_P0}${_P1}${_P2}${_P3}${_P4}
+    eval ${_P0}${_P1}${_P2}${_P3}${_P4} \
+        &>/dev/null
 }
 
 function _RO_efivars()
