@@ -294,6 +294,10 @@ function usage()
         "
 }
 
+#################################
+#### begin non function area ####
+#################################
+
 main
 
 unset -v _FCHOICE
