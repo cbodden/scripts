@@ -17,14 +17,6 @@
 #      REVISION: 9
 #===============================================================================
 
-LC_ALL=C
-LANG=C
-set -e
-set -o nounset
-set -o pipefail
-set -u
-trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
-
 function main()
 {
     readonly RED_F=$(tput setaf 1)
@@ -297,6 +289,14 @@ function usage()
 #################################
 #### begin non function area ####
 #################################
+
+LC_ALL=C
+LANG=C
+set -e
+set -o nounset
+set -o pipefail
+set -u
+trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 main
 
