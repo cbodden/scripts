@@ -8,7 +8,7 @@
 #                installing the new linux firmware,
 #                and rebooting into the new kern with kexec
 #       OPTIONS: -f, -k, -p
-#  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec, elinks, tar
+#  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec, elinks, wget
 #          BUGS: none so far
 #         NOTES: use wisely
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
