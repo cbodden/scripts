@@ -264,34 +264,34 @@ function usage()
 {
     ## usage / description function
     clear
-echo -e "
-NAME
-    ${PROGNAME} - EFI stub kernel installer
+    echo -e "
+    NAME
+        ${PROGNAME} - EFI stub kernel installer
 
-SYNOPSIS
-    ${PROGNAME} [OPTION]...
+    SYNOPSIS
+        ${PROGNAME} [OPTION]...
 
-DESCRIPTION
-    ${PROGNAME} will install a newly compiled kernel to the EFI stub
-    on the local machine.
-    It has options to download the latet linux firmware files and also
-    an option to reboot with Kexec after kernel is installed. 
+    DESCRIPTION
+        ${PROGNAME} will install a newly compiled kernel to the EFI stub
+        on the local machine.
+        It has options to download the latet linux firmware files and also
+        an option to reboot with Kexec after kernel is installed. 
 
-OPTIONS
-    -f [0|1]
-            This option enables / disables the firmware download.
-            This option is required.
-            0 = Disable
-            1 = Enable
+    OPTIONS
+        -f [0|1]
+                This option enables / disables the firmware download.
+                This option is required.
+                0 = Disable
+                1 = Enable
 
-    -k
-            This option sets kexec reboot.
-            Default is disabled.
+        -k
+                This option sets kexec reboot.
+                Default is disabled.
 
-    -p
-            This option sets pause after every item.
-            Default is disabled.
-    "
+        -p
+                This option sets pause after every item.
+                Default is disabled.
+        "
 }
 
 main
