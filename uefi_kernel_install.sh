@@ -7,14 +7,14 @@
 #   DESCRIPTION: this script assists with adding a new kernel to efi stub,
 #                installing the new linux firmware,
 #                and rebooting into the new kern with kexec
-#       OPTIONS: none
+#       OPTIONS: -f, -k, -p
 #  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec, elinks, tar
 #          BUGS: none so far
 #         NOTES: use wisely
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 08/25/2018 08:32:56 PM EDT
-#      REVISION: 7
+#      REVISION: 9
 #===============================================================================
 
 LC_ALL=C
@@ -44,7 +44,8 @@ function main()
         exit 1
     fi
 
-    readonly NAME=$(basename $0)
+    readonly PROGNAME=$(basename $0)
+    readonly PROGDIR=$(readlink -m $(dirname $0))
     readonly BZIMG="/arch/x86/boot/bzImage"
     readonly BOOT="/boot/EFI/gentoo/"
     readonly KERN_PATH=$(readlink -f /usr/src/linux)
@@ -89,9 +90,12 @@ function _Maj()
 
 function _Pause()
 {
-    printf "%s\n" \
-        "${GRN_F}. . . .Press enter to continue. . . .${CLR}"
-    read -p "$*"
+    if [ "${_PCHOICE}" == "enable" ]
+    then
+        printf "%s\n" \
+            "${GRN_F}. . . .Press enter to continue. . . .${CLR}"
+        read -p "$*"
+    fi
 }
 
 function _Timer()
@@ -110,74 +114,10 @@ function _Timer()
     done
 }
 
-function _Menu()
+function _Version()
 {
-    while :
-    do
-        printf "%s\n" \
-            "${BLU_F}This script will install " \
-            "${BLU_F}Kernel Version       : ${RED_F}${KERN_VER}" \
-            "${BLU_F}Kernel Version Full  : ${RED_F}${KERN_VER_FULL}" ""\
-            "${BLU_F}Do you want to reboot when kernel is installed ??${GRN_F}"
-        read -p "(${RED_F}Y${GRN_F})es or (${RED_F}N${GRN_F})o : " _KCHOICE
-        case ${_KCHOICE} in
-            [yY][eE][sS]|[yY])
-                _Dep mount dracut efibootmgr lsblk kexec
-                printf "%s\n" \
-                    "" "${BLU_F}Will reboot into new kernel with kexec" ""
-                readonly _KCHOICE="_Kexec"
-                break
-                ;;
-            [nN][oO]|[nN])
-                _Dep mount dracut efibootmgr lsblk
-                printf "%s\n" \
-                    "" "${BLU_F}Will not reboot into new kernel" ""
-                readonly _KCHOICE="exit 0"
-                break
-                ;;
-            * )
-                printf "%s\n" \
-                    ${RED_F}"Please answer Yes or No."
-                clear
-                ;;
-        esac
-    done
-
-    while :
-    do
-        printf "%s\n" \
-            "${BLU_F}Do you want to install the latest firmware ??${GRN_F}"
-        read -p "(${RED_F}Y${GRN_F})es or (${RED_F}N${GRN_F})o : " _FCHOICE
-        case ${_FCHOICE} in
-            [yY][eE][sS]|[yY])
-                _Dep elinks wget tar
-                printf "%s\n" \
-                    "" "${BLU_F}Will install the latest firmware" ""
-                readonly _FCHOICE="_Firmware"
-                break
-                ;;
-            [nN][oO]|[nN])
-                printf "%s\n" \
-                    "" "${BLU_F}Will not install latest firmware" ""
-                readonly _FCHOICE="echo"
-                break
-                ;;
-            * )
-                printf "%s\n" \
-                    ${RED_F}"Please answer Yes or No."
-                clear
-                ;;
-        esac
-    done
-
-    _Maj
-}
-
-function _TestVars()
-{
-    clear
     printf "%s\n" \
-        "${BLU_F}Kernel Path          : ${RED_F}${KERN_PATH}" \
+        "${BLU_F}This script will install " \
         "${BLU_F}Kernel Version       : ${RED_F}${KERN_VER}" \
         "${BLU_F}Kernel Version Full  : ${RED_F}${KERN_VER_FULL}" \
         "${CLR}"
@@ -274,12 +214,12 @@ function _Firmware()
     cd /tmp/${_VER}/
 
     printf "%s\n" \
-        "${BLU_F}Downloading Version : ${_DLOAD_VER##*/}" \
+        "${BLU_F}Downloading Version  : ${RED_F}${_DLOAD_VER##*/}" \
         "${RED_F}${WGET} ${ARCHIVE}${_DLOAD_VER}.tar.gz -q --show-progress" \
         "${CLR}"
     ${WGET} ${ARCHIVE}${_DLOAD_VER}.tar.gz -q --show-progress
 
-    printf "%s\n" \
+    printf "%s\n" "" \
         "${BLU_F}Uncompressing ${_DLOAD_VER##*/}" \
         "${RED_F}${TAR} -xzf ${_DLOAD_VER##*/}.tar.gz" \
         "${CLR}"
@@ -320,10 +260,89 @@ function _Kexec()
     ${KEXEC} -e
 }
 
+function usage()
+{
+    ## usage / description function
+    clear
+echo -e "
+NAME
+    ${PROGNAME} - EFI stub kernel installer
+
+SYNOPSIS
+    ${PROGNAME} [OPTION]...
+
+DESCRIPTION
+    ${PROGNAME} will install a newly compiled kernel to the EFI stub
+    on the local machine.
+    It has options to download the latet linux firmware files and also
+    an option to reboot with Kexec after kernel is installed. 
+
+OPTIONS
+    -f [0|1]
+            This option enables / disables the firmware download.
+            This option is required.
+            0 = Disable
+            1 = Enable
+
+    -k
+            This option sets kexec reboot.
+            Default is disabled.
+
+    -p
+            This option sets pause after every item.
+            Default is disabled.
+    "
+}
 
 main
-_Menu
-## _TestVars
+
+unset -v _FCHOICE
+_KCHOICE="exit 0"
+_PCHOICE="disable"
+
+## option selection
+while getopts ":f:kp" OPT
+do
+    case "${OPT}" in
+        'f')
+            if [ ${OPTARG} == 1 ]
+            then
+                _FCHOICE="_Firmware"
+            else
+                _FCHOICE="echo"
+            fi
+            ;;
+        'k')
+            _KCHOICE="_Kexec"
+            ;;
+        'p')
+            _PCHOICE="enable"
+            ;;
+        *)
+            usage \
+                | less
+            exit 0
+            ;;
+    esac
+done
+if [[ ${OPTIND} -eq 1 ]]
+then
+    usage \
+        | less
+    exit 0
+fi
+shift $((OPTIND-1))
+
+if [ -z "${_FCHOICE}" ]
+then
+    usage \
+        | less
+    exit 0
+fi
+
+_Dep mount dracut efibootmgr lsblk kexec elinks wget tar
+_Version
+_Maj
 _RW_efivars
 _Kernel_to_Boot
 _Make_initramfs
