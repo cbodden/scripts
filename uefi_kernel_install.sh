@@ -115,6 +115,16 @@ function _Version()
     _Pause
 }
 
+function _Module_Rebuild()
+{
+    printf "%s\n" \
+        "${BLU_F}Rebuilding external modules (nvidia) for ${KERN_VER_FULL}" \
+        "${RED_F}${EMERGE} --quiet-build @module-rebuild" \
+        "${CLR}"
+    _Pause
+    ${EMERGE} --quiet-build @module-rebuild
+}
+
 function _RW_efivars()
 {
     printf "%s\n" \
@@ -350,6 +360,7 @@ fi
 _Dep mount dracut efibootmgr lsblk kexec elinks wget tar
 _Version
 _Maj
+_Module_Rebuild
 _RW_efivars
 _Kernel_to_Boot
 _Make_initramfs
