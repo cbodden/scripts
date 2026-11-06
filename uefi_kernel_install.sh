@@ -360,6 +360,7 @@ fi
 _Dep mount dracut efibootmgr lsblk kexec elinks wget tar
 _Version
 _Maj
+${_FCHOICE}
 _Module_Rebuild
 _RW_efivars
 _Kernel_to_Boot
@@ -367,5 +368,4 @@ _Make_initramfs
 _Clear_Old_Boot
 _Install_New_Boot
 _RO_efivars
-${_FCHOICE}
 ${_KCHOICE}
