@@ -8,13 +8,14 @@
 #                installing the new linux firmware,
 #                and rebooting into the new kern with kexec
 #       OPTIONS: -f, -k, -p
-#  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec, elinks, wget
+#  REQUIREMENTS: efibootmgr, dracut, lsblk, kexec, elinks, wget, tar, mount,
+#                emerge
 #          BUGS: none so far
 #         NOTES: use wisely
 #        AUTHOR: Cesar Bodden (), cesar@pissedoffadmins.com
 #  ORGANIZATION: pissedoffadmins.com
 #       CREATED: 08/25/2018 08:32:56 PM EDT
-#      REVISION: 9
+#      REVISION: 10
 #===============================================================================
 
 function main()
@@ -211,9 +212,9 @@ function _Firmware()
 
     printf "%s\n" \
         "${BLU_F}Creating and switching to TMP (/tmp/${_VER})" \
-        "${RED_F}mkdir /tmp/${_VER}/ ; cd /tmp/${_VER}/" \
+        "${RED_F}mkdir -p /tmp/${_VER}/ ; cd /tmp/${_VER}/" \
         "${CLR}"
-    mkdir /tmp/${_VER}/
+    mkdir -p /tmp/${_VER}/
     cd /tmp/${_VER}/
 
     printf "%s\n" \
@@ -239,6 +240,7 @@ function _Firmware()
         "${RED_F}rm -rf /tmp/${_VER}/" \
         "${CLR}"
     rm -rf /tmp/${_VER}/
+    cd /
 }
 
 function _Kexec()
@@ -307,7 +309,7 @@ set -e
 set -o nounset
 set -o pipefail
 set -u
-trap 'echo "${NAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
+trap 'echo "${PROGNAME}: Ouch! Quitting." 1>&2 ; exit 1' 1 2 3 9 15
 
 clear
 
@@ -357,7 +359,7 @@ then
     exit 0
 fi
 
-_Dep mount dracut efibootmgr lsblk kexec elinks wget tar
+_Dep mount dracut efibootmgr lsblk kexec elinks wget tar emerge
 _Version
 _Maj
 ${_FCHOICE}
